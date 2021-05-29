@@ -529,7 +529,7 @@ header .go-back i {
 }
 
 /* 背景图效果. */
-/* .bg-cover {
+.bg-cover {
     position: relative;
     display: flex;
     align-items: center;
@@ -540,7 +540,7 @@ header .go-back i {
     background-position: center center;
     background-size: cover;
     transform: translate3d(0px, 0px, 0px);
-} */
+} 
 
 .index-cover {
     height: 100vh;
@@ -550,10 +550,10 @@ header .go-back i {
     height: 40vh !important;
 }
 
-.bg-cover:after {
+/* .bg-cover:after {
     -webkit-animation: rainbow 60s infinite;
     animation: rainbow 60s infinite;
-}
+} */
 
 .bg-cover:before,
 .bg-cover:after {
