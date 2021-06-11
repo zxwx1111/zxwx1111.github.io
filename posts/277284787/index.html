@@ -481,7 +481,7 @@ k_v\\
 <ul>
 <li>链接随机丢失（静态网络）：随机移除一些链接，然后尝试用机器学习算法将它们预测回来</li>
 <li>随着时间推移预测链接（随时间发展的网络）：给定直到时间$t_0’$的图$G[t_0,t_0’]$，输出一个排名列表$L$，包含预测会出现在$G[t_1,t_1’]$但不在$G[t_0,t_0’]$中的链接。<ul>
-<li>$n=|E_{new}|$:$#\  \mathrm{new\ edges\ that\ appear\ during\ the\ test\ period\ } [t_1,t_1’] $</li>
+<li>$n=|E_{new}|$: <script type="math/tex">\#\  \mathrm{new\ edges\ that\ appear\ during\ the\ test\ period\ } [t_1,t_1']</script></li>
 <li>$\mathrm{Take\ top\ }n\ \mathrm{elements\ of\ }L\ \mathrm{and\ count\ correct\ edges}$</li>
 </ul>
 </li>
@@ -509,7 +509,7 @@ k_v\\
 </ul>
 <p><strong>Katz index</strong>可表示为：</p>
 <script type="math/tex; mode=display">
-S_{v_1v_2}=\sum_{l=1}^{\infty}\beta^lA_{v_1v_2}^l</script><p>$\beta\in(0,1)$给越长的路径越低的重要性</p>
+S_{v_1v_2}=\sum_{l=1}^{\infty}\beta^lA_{v_1v_2}^l</script><p>$\beta\in(0,1)$给越长的路径设定越低的重要性</p>
 <p>闭式计算：</p>
 <script type="math/tex; mode=display">
 S=\sum_{i=1}^{\infty}\beta^iA^i=(I-\beta A)^{-1}-I</script><h4 id="3-5-Graph-Level"><a href="#3-5-Graph-Level" class="headerlink" title="3.5 Graph-Level"></a>3.5 Graph-Level</h4><p><strong>Goal</strong>:features that characterize the structure of an entire graph</p>
@@ -517,7 +517,7 @@ S=\sum_{i=1}^{\infty}\beta^iA^i=(I-\beta A)^{-1}-I</script><h4 id="3-5-Graph-Lev
 <blockquote>
 <p>Quick introduction:</p>
 <ul>
-<li>Kernal $K(G,G’)\in \R$ measures similarity b/w data</li>
+<li>Kernal $K(G,G’)\in \mathbb{R}$ measures similarity b/w data</li>
 <li>Kernel matrix $\boldsymbol{K}=(K(G,G’))_{G,G’}$must be positive semidefinite</li>
 <li>There exists a feature representation $\phi(\cdot)$ such that $K(G,G’)=\phi(G)^T\phi(G’)$</li>
 <li>Once the kernel is defined,off-the-shelf ML model such as kernel SVM can be used to make predictions</li>
@@ -540,7 +540,7 @@ S=\sum_{i=1}^{\infty}\beta^iA^i=(I-\beta A)^{-1}-I</script><h4 id="3-5-Graph-Lev
 <li>Nodes in graphlets here do not need to be connected</li>
 <li>The graphlets here are not rooted</li>
 </ul>
-<p>Given graph $G$, a graphlet list $\mathcal{G_k}=(g_1,\dots,g_{n_k})$,define the graphlet count vector $f_G\in \R^{n_k}$ as</p>
+<p>Given graph $G$, a graphlet list $\mathcal{G_k}=(g_1,\dots,g_{n_k})$,define the graphlet count vector $f_G\in \mathbb{R}^{n_k}$ as</p>
 <script type="math/tex; mode=display">
 (f_G)_i= \#(g_i \subseteq G) \ for \ i= 1,\dots n_k</script><script type="math/tex; mode=display">
 K(G,G')=\boldsymbol{f_G^Tf_{G^{\boldsymbol{'}}}}</script><p><strong>Problem:</strong>$G$ 和 $G^{‘}$大小不同时，会引起值的偏向。</p>
@@ -553,11 +553,11 @@ K(G,G')=\boldsymbol{h_G^Th_{G^{\boldsymbol{'}}}}</script><p><strong>Limitations:
 <p><strong>Algorithm:</strong>Color refinement（颜色细化）或 Weisfeiler-Lehman图同构检验</p>
 <p><strong>Given:</strong>带有一组结点$V$，为每个结点$v$分配初始颜色$c^{(0)}(v)$，迭代</p>
 <script type="math/tex; mode=display">
-c^{(k+1)}(v)=\bold{HASH}(\left\{c^{(k)}(v),\left\{c^{(k)}(u)\right\}_{u \in N(v)}\right\})</script><p><strong>HASH</strong>将不同输入映射到不同颜色</p>
+c^{(k+1)}(v)=\boldsymbol{HASH}(\left\{c^{(k)}(v),\left\{c^{(k)}(u)\right\}_{u \in N(v)}\right\})</script><p><strong>HASH</strong>将不同输入映射到不同颜色</p>
 <p>经过$K$步，得到的$c^{(K)}(v)$总结了K跳邻域的结构。</p>
 <p>在颜色细分后，WL Kernel统计给定颜色的结点数，得到一个向量</p>
 <p>$K(G,G’)$仍然定义为向量的点积。</p>
-<p>复杂度关于边数是线性的</p>
+<p>时间复杂度关于边数是线性的。</p>
 
                 
             </div>
