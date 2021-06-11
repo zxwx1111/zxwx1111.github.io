@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Graph Nerual Network, Xu Qian的博客">
+    <meta name="keywords" content="GNN综述, Xu Qian的博客">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Graph Nerual Network | Xu Qian的博客</title>
+    <title>GNN综述 | Xu Qian的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -205,12 +205,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/11.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Graph Nerual Network</h1>
+                    <h1 class="description center-align post-title">GNN综述</h1>
                 </div>
             </div>
         </div>
@@ -351,7 +351,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.1k
+                    2.7k
                 </div>
                 
 
@@ -375,39 +375,75 @@
 <li>谱方法在谱域里定义 ，通过Fourier变化到谱域，在谱域实现卷积定义;</li>
 <li>空间方法在结点域定义卷积，由于结点邻域大小不同，实现参数共享困难，关键就是参数共享。</li>
 </ul>
-<h3 id="1-Spectral-methods"><a href="#1-Spectral-methods" class="headerlink" title="1. Spectral methods"></a>1. Spectral methods</h3><h4 id="1-1-1-输入与输出"><a href="#1-1-1-输入与输出" class="headerlink" title="1.1.1 输入与输出"></a>1.1.1 输入与输出</h4><p>图$\boldsymbol{G = (V,E,W)}$</p>
+<h2 id="1-Spectral-methods"><a href="#1-Spectral-methods" class="headerlink" title="1. Spectral methods"></a>1. Spectral methods</h2><h4 id="1-1-1-输入"><a href="#1-1-1-输入" class="headerlink" title="1.1.1 输入"></a>1.1.1 输入</h4><p>图$\boldsymbol{G = (V,E,W)}$</p>
 <p>$\boldsymbol{V}$为点集，$\boldsymbol{n=|V|}$，$\boldsymbol{E}$为边集，$\boldsymbol{W \in R^{n\times n}}$权重集合。</p>
 <p>每一个点都有一个$\boldsymbol{d}$维特征，所以有$\boldsymbol{X \in  R^{n\times d}}$的特征矩阵，每一列可以看做定义在这些结点上的信号。</p>
 <h4 id="1-1-2-图上的Laplacian"><a href="#1-1-2-图上的Laplacian" class="headerlink" title="1.1.2 图上的Laplacian"></a>1.1.2 图上的Laplacian</h4><p>对图做谱分析的基本工具，定义了图上的导数，刻画了信号的平滑程度。</p>
 <ul>
-<li><p>$\boldsymbol{L=D-W}$</p>
-</li>
-<li><p>正则化版本 $\boldsymbol{L=I-D^{-\frac{1}{2}}}WD^{-\frac{1}{2}}$</p>
+<li>$\boldsymbol{L=D-W}$</li>
+<li>归一化版本 $\boldsymbol{L_{norm}=D^{-\frac{1}{2}}LD^{-\frac{1}{2}}=I-D^{-\frac{1}{2}}WD^{-\frac{1}{2}}}$，将主对角线全变为1</li>
+<li>$L$为实对称矩阵，可以用正交矩阵进行正交相似对角化。</li>
+</ul>
+<script type="math/tex; mode=display">
+L=U\Lambda U^T</script><ul>
+<li>以$L$为系数矩阵的二次型，图的总变差：</li>
+</ul>
+<script type="math/tex; mode=display">
+x^TLx=x^TU\Lambda U^Tx=\sum_{i=1}^{n}\sum_{j\in N(i)}x_i(x_i-x_j)=\sum_{e_{ij}}(x_i-x_j)^2</script><ul>
+<li>$L$具有以下性质：<ul>
+<li>每行元素之和为零，至少有一个特征值为0，对应特征向量$u_0=\frac{[1,1,\dots1]^T}{\sqrt{n}}$,$\textbf{L}u_0=0u_0$</li>
+<li>特征值都大于等于0，归一化拉普拉斯矩阵特征值区间为[0,2]</li>
+</ul>
 </li>
 </ul>
-<h4 id="1-1-3-Fourier-basis"><a href="#1-1-3-Fourier-basis" class="headerlink" title="1.1.3 Fourier basis"></a>1.1.3 Fourier basis</h4><p>$\boldsymbol{n}$个结点，每个结点有一个取值，图上的一个信号就是$\boldsymbol{n}$维向量，要变换到新的域里，就需要一组基，这就是$\boldsymbol{L}$的$\boldsymbol{n}$个特征向量，彼此正交。特征向量$\left\{ u_l \right\}_{l=1}^n$，由非负特征值$\left\{ \lambda_l \right\}_{l=1}^n$排序 </p>
+<p>图微分的定义：</p>
+<ul>
+<li>第$i$个结点处，一阶偏导</li>
+</ul>
+<script type="math/tex; mode=display">
+\frac{\partial \boldsymbol{x}}{\partial e(i,j)}=\sqrt{W_{i,j}}(x_j-x_i)</script><ul>
+<li>第$i$个结点处，梯度是一个向量</li>
+</ul>
+<script type="math/tex; mode=display">
+\nabla_i \boldsymbol{x}=\left\{\frac{\partial \boldsymbol{x}}{\partial e(i,j)}|j\in N(i)\right\}</script><ul>
+<li>图的局部平滑度</li>
+</ul>
+<script type="math/tex; mode=display">
+||\nabla_i \boldsymbol{x}||=\left[{\sum_{j\in N(i)}\left(\frac{\partial \boldsymbol{x}}{\partial e(i,j)}\right)^2}\right]^{\frac{1}{2}}=\left[{\sum_{j\in N(i)}W_{ij}\left(x_j-x_i\right)^2}\right]^{\frac{1}{2}}</script><ul>
+<li>全局平滑度：离散p-狄利克雷型</li>
+</ul>
+<script type="math/tex; mode=display">
+S_p(x)=\frac{1}{p}\sum_{i}^{V}||\nabla_i \boldsymbol{x}||_2^p</script><ul>
+<li>$p=2$时，</li>
+</ul>
+<script type="math/tex; mode=display">
+S_2(x)=\frac{1}{2}\sum_{i\in V}\sum_{j\in N(i)}W_{i,j}(x_j-x_i)^2=\sum_{e(i,j)\in E}W_{i,j}(x_j-x_i)^2</script><h4 id="1-1-3-Fourier基"><a href="#1-1-3-Fourier基" class="headerlink" title="1.1.3 Fourier基"></a>1.1.3 Fourier基</h4><p>$\boldsymbol{n}$个结点，每个结点有一个取值，图上的一个信号就是$\boldsymbol{n}$维向量，要变换到新的域里，就需要一组基，这就是$\boldsymbol{L}$的$\boldsymbol{n}$个特征向量，彼此正交。取基为特征向量$\left\{ u_l \right\}_{l=1}^n$，由非负特征值$\left\{ \lambda_l \right\}_{l=1}^n$排序 。可以证明更小的特征值对应的特征向量更平滑，因此我们可以将拉普拉斯矩阵的特征值等价成频率。低频特征向量变化缓慢，其直观的效果是两个被大权重边相连的节点它们的信号值十分接近；高频特征向量则剧烈振荡，相邻节点的信号值差异较大。</p>
+<p>$L$的正交相似对角化：</p>
 <script type="math/tex; mode=display">
 L=U\Lambda U^{T}</script><p>$\boldsymbol{U=\left[u_1,\dots ,u_n\right]}$，$\boldsymbol{\Lambda=diag\left(\left[\lambda_1,\dots ,\lambda_n\right] \right)}$。</p>
 <p>对于一个信号$x\in R^n$，Fourier变换定义为</p>
 <script type="math/tex; mode=display">
 \hat{x}=U^{T}x</script><p>逆变换</p>
 <script type="math/tex; mode=display">
-x=U\hat{x}</script><h4 id="1-1-4-卷积"><a href="#1-1-4-卷积" class="headerlink" title="1.1.4 卷积"></a>1.1.4 卷积</h4><p>两个信号的卷积可以看作Fourier变换后的点积。</p>
+x=U\hat{x}</script><p>总变差</p>
+<script type="math/tex; mode=display">
+x^TLx=x^TU\Lambda U^Tx=\hat x^T\Lambda\hat{x}=\sum_{i=1}^{n}\lambda_i\hat{x_i}^2</script><h4 id="1-1-4-卷积"><a href="#1-1-4-卷积" class="headerlink" title="1.1.4 卷积"></a>1.1.4 卷积</h4><p>两个信号的卷积可以看作Fourier变换后的点积。</p>
 <script type="math/tex; mode=display">
 x \ast_G y =U((U^Tx)\odot(U^Ty))</script><p>这里的卷积核为$U^Ty$</p>
-<p>令$U^Ty=[\theta_0,\dots,\theta_{n-1}]^{T}$，$g_\theta=diag([\theta_0,\dots,\theta_{n-1}])$<sup><a href="#fn_1" id="reffn_1">1</a></sup></p>
+<p>令$U^Ty=[\theta_0,\dots,\theta_{n-1}]^{T}$，将其变为矩阵$g_\theta=diag([\theta_0,\dots,\theta_{n-1}])$</p>
+<p> $g_\theta$是有n个参数的对角阵，参数是自由的、需要学习的参数</p>
 <p>上式可变化为</p>
 <script type="math/tex; mode=display">
 x \ast_G y = Ug_\theta U^Tx</script><hr>
-<h4 id="1-2-Spectral-Graph-CNN"><a href="#1-2-Spectral-Graph-CNN" class="headerlink" title="1.2 Spectral Graph CNN"></a>1.2 Spectral Graph CNN</h4><script type="math/tex; mode=display">
-x_{k+1,j}=h\left(\sum_{i=1}^{f_k}UF_{k,i,j}U^Tx_{k,i}\right),j=1,\dots,f_{k+1}</script><p>$x_{k,i}$是第k层的信号，$F_{k,i,j}$是第k层的核。</p>
+<h3 id="1-2-Spectral-Graph-CNN"><a href="#1-2-Spectral-Graph-CNN" class="headerlink" title="1.2 Spectral Graph CNN"></a>1.2 Spectral Graph CNN</h3><script type="math/tex; mode=display">
+x_{k+1,j}=h\left(\sum_{i=1}^{f_k}UF_{k,i,j}U^Tx_{k,i}\right),j=1,\dots,f_{k+1}</script><p>$x_{k,i}$是第k层的信号，$F_{k,i,j}$是第k层的核，$h(\cdot)$为卷积运算。</p>
 <h4 id="1-2-1-Spectral-Graph-CNN的短板"><a href="#1-2-1-Spectral-Graph-CNN的短板" class="headerlink" title="1.2.1 Spectral Graph CNN的短板"></a>1.2.1 Spectral Graph CNN的短板</h4><ul>
-<li>依赖于Laplacian矩阵分解，非常复杂</li>
+<li>依赖于Laplacian矩阵分解，非常复杂$\boldsymbol O\left(n^3\right)$</li>
 <li>高计算代价，稠密的矩阵乘$\boldsymbol x$复杂度$\boldsymbol O\left(n^2\right)$</li>
 <li>在结点域是非局部的(not localized)</li>
 </ul>
 <hr>
-<h4 id="1-3-ChebyNet"><a href="#1-3-ChebyNet" class="headerlink" title="1.3 ChebyNet"></a>1.3 ChebyNet</h4><p>使用多项式函数对卷积核作参数化</p>
+<h3 id="1-3-ChebyNet"><a href="#1-3-ChebyNet" class="headerlink" title="1.3 ChebyNet"></a>1.3 ChebyNet</h3><p>使用多项式函数对卷积核作参数化</p>
 <p>将$g_\theta$变为</p>
 <script type="math/tex; mode=display">
 g_{\beta}\left(\Lambda\right)=\sum_{k=0}^{K-1}\beta_k\Lambda^k, \Lambda=diag(\lambda_1,\dots,\lambda_n)</script><p>这样</p>
@@ -417,8 +453,11 @@ x \ast_G y = Ug_\beta(\Lambda) U^Tx=\sum_{k=0}^{K-1}\beta_kL^kx</script><ul>
 <li>L稀疏，降低复杂度为$\boldsymbol{O(|E|)}$</li>
 <li>L为局部化函数，卷积只受k跳邻居邻居影响</li>
 </ul>
+<h4 id="1-3-1-切比雪夫多项式"><a href="#1-3-1-切比雪夫多项式" class="headerlink" title="1.3.1 切比雪夫多项式"></a>1.3.1 切比雪夫多项式</h4><p>引入切比雪夫多项式近似$L^k$,$T_k(x)$为k阶切比雪夫多项式</p>
+<script type="math/tex; mode=display">
+g_{\beta}\left(\Lambda\right)=\sum_{k=0}^{K-1}\beta_kT_k(\tilde\Lambda), \tilde\Lambda=\frac{2}{\lambda_{max}}\Lambda-I_N</script><p>切比雪夫多项式的输入在$[-1,1]$之间。</p>
 <hr>
-<h4 id="1-4-Graph-wavelet-nerual-network"><a href="#1-4-Graph-wavelet-nerual-network" class="headerlink" title="1.4 Graph wavelet nerual network"></a>1.4 Graph wavelet nerual network</h4><p>ChebyNet通过约束卷积取值空间，限制为$\Lambda$的多项式函数。</p>
+<h3 id="1-4-Graph-wavelet-nerual-network"><a href="#1-4-Graph-wavelet-nerual-network" class="headerlink" title="1.4 Graph wavelet nerual network"></a>1.4 Graph wavelet nerual network</h3><p>ChebyNet通过约束卷积取值空间，限制为$\Lambda$的多项式函数。</p>
 <p>之前的问题主要来自$\boldsymbol{U}$ 的性质不够好，所以采用小波基来代替Fourier基。</p>
 <p>小波基具有以下性质：</p>
 <ul>
@@ -474,13 +513,13 @@ x_{k+1,j}=h\left(\sum_{i=1}^{p}\psi_s F_{k,i,j}\psi_s ^{-1}x_{k,i}\right),\\j=1,
 \boldsymbol{Graph \ convolution}\\x_{k+1,j}=h\left(\psi_sF_k\psi_s^{-1}y_{k,j}\right),F_k\  is \ a \ diagonal\ matrix \ with\  n \ parameters</script><p>复杂度：$O(n + p \ast q)$</p>
 <p><strong>谱方法为空间方法的特例</strong></p>
 <hr>
-<h3 id="2-Spatial-methods"><a href="#2-Spatial-methods" class="headerlink" title="2. Spatial methods"></a>2. Spatial methods</h3><h4 id="2-1-通过类比"><a href="#2-1-通过类比" class="headerlink" title="2.1 通过类比"></a>2.1 通过类比</h4><ol>
-<li><strong>确定邻里</strong></li>
+<h2 id="2-Spatial-methods"><a href="#2-Spatial-methods" class="headerlink" title="2. Spatial methods"></a>2. Spatial methods</h2><h3 id="2-1-通过类比"><a href="#2-1-通过类比" class="headerlink" title="2.1 通过类比"></a>2.1 通过类比</h3><ol>
+<li><strong>确定邻居</strong></li>
 <li>给邻居结点编序</li>
 <li>参数共享</li>
 </ol>
 <p>对每一个结点，为它选择固定数量的邻居，定义一个邻近度的度量。</p>
-<h4 id="2-2-GraphSAGE"><a href="#2-2-GraphSAGE" class="headerlink" title="2.2 GraphSAGE"></a>2.2 GraphSAGE</h4><p>选固定的个数，直接随机选择得了，用随机行走选固定个数。</p>
+<h3 id="2-2-GraphSAGE"><a href="#2-2-GraphSAGE" class="headerlink" title="2.2 GraphSAGE"></a>2.2 GraphSAGE</h3><p>选固定的个数，直接随机选择得了，用随机行走选固定个数。</p>
 <ul>
 <li><p>Sampling neighbors</p>
 </li>
@@ -490,7 +529,73 @@ x_{k+1,j}=h\left(\sum_{i=1}^{p}\psi_s F_{k,i,j}\psi_s ^{-1}x_{k,i}\right),\\j=1,
 <script type="math/tex; mode=display">
 a_v^{(k)}=AGGREGATE^{(k)} \left(\left\{h_u^{(k-1)}:u \in \mathcal{N(v)} \right\}\right)\\
 h_v^{(k)}=COMBINE^{(k)}\left(h_v^{(k-1)},a_v^{(k)}\right)\\
-\color{Red}{Aggregate\ the \ information\ of \ neighboring\ nodes\ to\ update\ the\ representation\ of\ center\ node.}$​</script><h4 id="2-3-GCN"><a href="#2-3-GCN" class="headerlink" title="2.3 GCN"></a>2.3 GCN</h4><p>ChebNet的简化版本，但已经是空间方法了。</p>
+\color{Red}{Aggregate\ the \ information\ of \ neighboring\ nodes\ to\ update\ the\ representation\ of\ center\ node.}</script><h3 id="2-3-GCN"><a href="#2-3-GCN" class="headerlink" title="2.3 GCN"></a>2.3 GCN</h3><p>ChebyNet的简化版本，但已经是空间方法了,进一步选取$K=2$，$\lambda_{max}=2$，。</p>
+<ul>
+<li>通过正则化Laplacian矩阵聚合邻域信息</li>
+<li>由特征变化共享参数</li>
+</ul>
+<script type="math/tex; mode=display">
+g_\theta \ast x \approx \theta_0+\theta_1(L-I_N)x=\theta_0x-\theta_1D^{-{\frac{1}{2}}}AD^{-{\frac{1}{2}}}x</script><p>在实际训练过程中，我们需要规范化参数来避免过拟合，所以我们令 $\theta=\theta_0^{‘}=-\theta_1^{‘}$</p>
+<script type="math/tex; mode=display">
+g_\theta \ast x \approx \theta (I_N+ D^{-{\frac{1}{2}}}AD^{-{\frac{1}{2}}})x</script><p>实际上$I_N+ D^{-{\frac{1}{2}}}AD^{-{\frac{1}{2}}}$的特征值在$[0,2]$之间，需要再次归一化。</p>
+<script type="math/tex; mode=display">
+I_N+ D^{-{\frac{1}{2}}}AD^{-{\frac{1}{2}}}\to \tilde D^{-{\frac{1}{2}}}\tilde A\tilde D^{-{\frac{1}{2}}},\tilde D_{ii}=\sum_j \tilde{A_{ij}},\tilde{A}=A+I_N</script><p>那么对于输入结点向量$X \in R^{N \times C}$，其中 N 为节点数，C 为节点的特征向量维度，我们有：</p>
+<script type="math/tex; mode=display">
+Z=\tilde D^{-{\frac{1}{2}}}\tilde A\tilde D^{-{\frac{1}{2}}}X\Theta</script><p>$\Theta \in R^{C\times F}$是滤波器的参数矩阵，$Z\in R^{N \times F}$ 是卷积后的信号矩阵，时间复杂度$O(|E|FC)$</p>
+<p>多层图卷积网络：</p>
+<script type="math/tex; mode=display">
+H^{(l+1)}=\sigma(\tilde D^{-{\frac{1}{2}}}\tilde A\tilde D^{-{\frac{1}{2}}}H^{(l)}W^{(l)})</script><p>$W^{(l)}$为第$l$层权重矩阵，$\sigma(\cdot)$是激活函数，$H^{(l)}\in R^{N \times D}$是第$l$层激活函数，$H^{(0)}=X$</p>
+<p>至于模型：</p>
+<script type="math/tex; mode=display">
+Z=f(X,A)=softmax(\hat{A}ReLU(\hat AXW^{(0)})W^{(1)})</script><p>$W^{(0)}\in R^{C\times H}$从输入层到隐藏层，$W^{(1)}\in R^{H\times F}$从隐藏层到输出层</p>
+<p>代价函数：</p>
+<script type="math/tex; mode=display">
+L=-\sum_{l\in y_L}\sum_{f=1}^{F}Y_{lf}\ ln\ Z_{lf}</script><h3 id="2-4-GAT"><a href="#2-4-GAT" class="headerlink" title="2.4 GAT"></a>2.4 GAT</h3><p>GCN没有卷积、参数共享，还需要一个$\vec{a}$，是用一个结点收自己邻域信息时要共享的参数，是Self-Attention。</p>
+<p>自己做完特征变换，邻居做完特征变换，然后组合一下，过一个Attention机制，得到一个权重。</p>
+<script type="math/tex; mode=display">
+\alpha_{ij}=\frac{\exp(\mathrm{LeakyReLU}(\vec{a}^{T}[W\vec{h_i}||W\vec{h_j}]))}{\sum_{k\in \mathcal{N}_i}\exp(\mathrm{LeakyReLU}(\vec{a}^{T}[W\vec{h_i}||W\vec{h_j}]))}</script><p>$W$为特征变换参数，$\vec{a}$为注意力机制参数</p>
+<h3 id="2-5-MoNet"><a href="#2-5-MoNet" class="headerlink" title="2.5 MoNet"></a>2.5 MoNet</h3><p>空间方法的一般框架。</p>
+<p>定义各种各样的核函数，目的是为了度量目标结点与其他结点的相似度，卷积核则是这些核函数的权重。</p>
+<script type="math/tex; mode=display">
+(f \ast g)=\sum_{j=1}^{J}g_jD_j(x)f</script><h2 id="3-Spectral-methods-vs-Spatial-methods"><a href="#3-Spectral-methods-vs-Spatial-methods" class="headerlink" title="3. Spectral methods vs. Spatial methods"></a>3. Spectral methods vs. Spatial methods</h2><h3 id="3-1-谱方法是空间方法的特例"><a href="#3-1-谱方法是空间方法的特例" class="headerlink" title="3.1 谱方法是空间方法的特例"></a>3.1 谱方法是空间方法的特例</h3><p>谱方法需要显式定义卷积核，而空间方法不需要。</p>
+<script type="math/tex; mode=display">
+(f \ast g)=\sum_{j=1}^{J}g_jD_j(x)f</script><p>$D_j(x)$为核函数</p>
+<h3 id="3-2-Spectral-methods"><a href="#3-2-Spectral-methods" class="headerlink" title="3.2 Spectral methods"></a>3.2 Spectral methods</h3><ul>
+<li>Spectral CNN</li>
+</ul>
+<script type="math/tex; mode=display">
+y=Ug_\theta U^T x=(\theta_1 {\color{Red}{u_1u_1^T}}+\dots +\theta_n {\color{Red}{u_nu_n^T}})</script><ul>
+<li>ChebyNet</li>
+</ul>
+<script type="math/tex; mode=display">
+y=(\theta_0{\color{Red}I}+\theta_1{\color{Red}L}+\dots+\theta_{K-1}{\color{Red}L^{K-1}})x</script><ul>
+<li>GCN</li>
+</ul>
+<script type="math/tex; mode=display">
+y=\theta({\color{Red}I}-{\color{Red}L})x</script><h3 id="3-3-基本滤波器"><a href="#3-3-基本滤波器" class="headerlink" title="3.3 基本滤波器"></a>3.3 基本滤波器</h3><p>信号$\boldsymbol{x}$在图上的平滑程度被定义为</p>
+<script type="math/tex; mode=display">
+x^TLx=\sum_{(u,v)\in E}A_{uv}\left(\frac{x_u}{\sqrt{d_u}}-\frac{x_v}{\sqrt{d_v}}\right)^2</script><p>特征值$\lambda_i=u_i^TLu_i$可以被视为特征向量$u_i$的频率。</p>
+<p>每一个$u_iu_i^T$是一个基本的滤波器，只让频率$\lambda_i$的信号通过。</p>
+<p>Spectral CNN恰是这些滤波器的线性组合。</p>
+<p>ChebyNet的$L^k$是基础滤波器带有特殊系数$\left\{\lambda_i^k\right\}_{i=1}^n$的线性组合。</p>
+<p>即认为信号频率越高，权重越大，实际上是对高频信号的加强，然而高频信号不体现节点分类的平滑性。</p>
+<p>GCN之所以表现更好，是因为只考虑$k=0$和$k=1$，是对ChebyNet的低阶近似。</p>
+<h3 id="3-4-GraphHeat"><a href="#3-4-GraphHeat" class="headerlink" title="3.4 GraphHeat"></a>3.4 GraphHeat</h3><p>设计低通滤波器</p>
+<p>$\left\{e^{-skL}\right\}$，$e^{-sL}$是热核，通过图上热扩散定义相似度：</p>
+<script type="math/tex; mode=display">
+e^{-sL}=Ue^{-s\Lambda}U^T,\Lambda=diag(\lambda_1,\dots,\lambda_n)</script><p>频率高的信号有一个$e$的指数衰减过程，$u_iu_i^T$的参数是$e^{-s\lambda_i}$</p>
+<h2 id="4-Graph-Pooling"><a href="#4-Graph-Pooling" class="headerlink" title="4. Graph Pooling"></a>4. Graph Pooling</h2><p>早期图上任务关于结点级别，对应图像的像素级别，不需要pooling。</p>
+<h3 id="4-1-Graph-coarsening"><a href="#4-1-Graph-coarsening" class="headerlink" title="4.1 Graph coarsening"></a>4.1 Graph coarsening</h3><p>类似下采样，对图做聚类，最后将每个聚类变成超级结点。</p>
+<h3 id="4-2-Node-selection"><a href="#4-2-Node-selection" class="headerlink" title="4.2 Node selection"></a>4.2 Node selection</h3><p>每做一层厚，选一部分结点作为代表，需要量化结点重要性的度量。</p>
+<h2 id="5-Questions"><a href="#5-Questions" class="headerlink" title="5. Questions"></a>5. Questions</h2><ul>
+<li><strong>Does structure matters?</strong></li>
+<li><strong>Context representation?</strong></li>
+<li><strong>Future applications?</strong></li>
+</ul>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/120311352">https://zhuanlan.zhihu.com/p/120311352</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/290755442">https://zhuanlan.zhihu.com/p/290755442</a></li>
+</ol>
 
                 
             </div>
@@ -602,18 +707,17 @@ h_v^{(k)}=COMBINE^{(k)}\left(h_v^{(k-1)},a_v^{(k)}\right)\\
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/posts/3892482635/">
+                <a href="/posts/277284787/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="Graph Nerual Network">
+                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="CS224W-01">
                         
-                        <span class="card-title">Graph Nerual Network</span>
+                        <span class="card-title">CS224W-01</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -623,9 +727,9 @@ h_v^{(k)}=COMBINE^{(k)}\left(h_v^{(k-1)},a_v^{(k)}\right)\\
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-06-06
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2021-06-09
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -634,7 +738,6 @@ h_v^{(k)}=COMBINE^{(k)}\left(h_v^{(k-1)},a_v^{(k)}\right)\\
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
@@ -834,7 +937,7 @@ h_v^{(k)}=COMBINE^{(k)}\left(h_v^{(k-1)},a_v^{(k)}\right)\\
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">1.2k</span>
+                        class="white-color">4.6k</span>
             
             
             
