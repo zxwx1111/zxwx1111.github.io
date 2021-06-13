@@ -438,9 +438,11 @@ ENC(v)=\boldsymbol{z_v}=\boldsymbol{Z}\cdot v</script><p>$\boldsymbol{Z}\in \mat
 \mathcal{L}=\sum_{u \in V}\sum_{v\in N_R(u)}-\log(P(v|\boldsymbol{z_u}))</script><p>使用softmax参数化$P(v|\boldsymbol{z_u})$</p>
 <script type="math/tex; mode=display">
 P(v|\boldsymbol{z_u})=\frac{\exp(\boldsymbol{z_u^Tz_n})}{\sum_{n\in V}\exp(\boldsymbol{z_u^Tz_n})}</script><p><em>注：想更多分配概率质量给分子</em></p>
+<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-13_17-10-33.png" alt=""></p>
 <p>优化随机游走=最小化$\mathcal{L}$</p>
 <p>但上面两个求和给出复杂度$O(|V|^2)$</p>
 <p>负采样：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-13_17-10-44.png" alt=""></p>
 <p>$\sigma$为 sigmoid 函数，$n_i$的选取以带偏移的随机方式采样。</p>
 <p><strong>不针对网络中所有结点进行标准化，针对$k$个随机负样本$n_i$归一化</strong></p>
 <p>如何选择负样本？</p>
