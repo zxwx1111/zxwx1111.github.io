@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="cs224w-05, Xu Qian的博客">
+    <meta name="keywords" content="cs224w-07, Xu Qian的博客">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>cs224w-05 | Xu Qian的博客</title>
+    <title>cs224w-07 | Xu Qian的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -205,12 +205,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/9.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">cs224w-05</h1>
+                    <h1 class="description center-align post-title">cs224w-07</h1>
                 </div>
             </div>
         </div>
@@ -342,7 +342,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-06-16
+                    2021-06-24
                 </div>
                 
 
@@ -351,7 +351,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.1k
+                    2.3k
                 </div>
                 
 
@@ -371,136 +371,435 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p><strong>Recap: Node Embeddings</strong></p>
-<p><strong>Intuition: </strong>Map nodes to $d$-dimensional embeddings such that similar nodes in the graph are embedded close together</p>
-<p><strong>Goal: </strong>$similarity(u,v)\approx z_v^Tz_u$</p>
-<p><strong>Encoder and Decoder</strong></p>
-<p>最简单的Encoder就是一个嵌入查找</p>
-<blockquote>
-<p><strong>Limitations:</strong></p>
+                <h3 id="1-GNN-Augmentation"><a href="#1-GNN-Augmentation" class="headerlink" title="1. GNN Augmentation"></a>1. GNN Augmentation</h3><ul>
+<li><p>图特征增强</p>
+</li>
+<li><p>图结构增强</p>
+</li>
+</ul>
+<h4 id="1-1-Why-Augment-Graphs？"><a href="#1-1-Why-Augment-Graphs？" class="headerlink" title="1.1 Why Augment Graphs？"></a>1.1 Why Augment Graphs？</h4><p><strong>Our assumpution so far:</strong> Raw input graph = computational graph</p>
+<p><strong>Reasons for breaking this assumption:</strong></p>
 <ul>
-<li>$O(|V|)$ parameters are needed<ul>
-<li>No sharing of parameters between nodes</li>
-<li>Every node has its own unique embedding</li>
+<li>Features:<ul>
+<li>The input graph <strong>lacks features</strong></li>
 </ul>
 </li>
-<li>Inheretly “transductive”<ul>
-<li>Cannot generate embeddings for nodes that are not seen during training</li>
-</ul>
-</li>
-<li>Do not incorporate node features<ul>
-<li>Many graph have features that we can and should leverage</li>
+<li>Graph structure:<ul>
+<li>The graph is <strong>too sparse:</strong> inefficient message passing</li>
+<li>The graph is <strong>too dense:</strong> message passing is too costly</li>
+<li>The graph is <strong>too large:</strong> cannot fit the computational graph into a GPU</li>
 </ul>
 </li>
 </ul>
-</blockquote>
-<p><strong>Deep Graph Encoders</strong></p>
-<p>$\mathrm{ENC}(v)=$ <strong>multiple layers of non-linear transformations based on graph structure</strong></p>
-<p><em>注：所有的深度编码器也可以结合之前的结点相似度函数</em></p>
-<p><strong>Tasks: </strong></p>
+<p>It’s <strong>unlikely that the input graph happens to be the optimal computation graph</strong> for embeddings</p>
+<p><strong>Augmentation Approaches</strong></p>
 <ul>
-<li>Node classification: Predict a type of a given node</li>
-<li>Link prediction: Predict whether two nodes are linked</li>
-<li>Community detection: Identify densely linked clusters of nodes</li>
-<li>Network similarity: How similar are two (sub)networks</li>
+<li><p>Features:</p>
+<ul>
+<li>The input graph <strong>lacks features</strong> $\rightarrow$ <strong>feature augmentation</strong></li>
 </ul>
-<h3 id="1-Basics-of-Deep-Learning"><a href="#1-Basics-of-Deep-Learning" class="headerlink" title="1. Basics of Deep Learning"></a>1. Basics of Deep Learning</h3><p>监督学习：给定输入 $x$, 目标是预测标签 $y$</p>
-<p>公式化为一个优化问题：</p>
+</li>
+<li><p>Graph structure:</p>
+<ul>
+<li>The graph is <strong>too sparse:</strong> $\rightarrow$ <strong>Add virtual nodes/edges</strong></li>
+<li>The graph is <strong>too dense:</strong> $\rightarrow$ <strong>Sample neighbors when doing message passing</strong></li>
+<li>The graph is <strong>too large:</strong> $\rightarrow$ <strong>Sample subgraphs to compute embeddings</strong><ul>
+<li>will cover in <strong>Scaling up GNNs</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="1-2-Feature-Augmentation"><a href="#1-2-Feature-Augmentation" class="headerlink" title="1.2 Feature Augmentation"></a>1.2 Feature Augmentation</h4><p>Why do we need feature augmentation?</p>
+<h5 id="1-2-1-输入图不含结点特征"><a href="#1-2-1-输入图不含结点特征" class="headerlink" title="1.2.1 输入图不含结点特征"></a>1.2.1 输入图不含结点特征</h5><p>例如输入只是图邻接矩阵</p>
+<p><strong>标准方法：</strong></p>
+<ul>
+<li>为结点分配一个常值</li>
+<li>为结点分配唯一的 ID，它们会被转换为 one-hot 向量</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Constant node feature</th>
+<th>One-hot node feature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Expressive power</td>
+<td>Medium. All the nodes are identical, but <strong>GNN can still learn from the graph structure</strong></td>
+<td>High. Each node has a unique ID, so <strong>node-specific information can be stored</strong></td>
+</tr>
+<tr>
+<td>Inductive learning (Generalize to unseen nodes)</td>
+<td>High. <strong>Simple to generalize to new nodes:</strong> we assign constant feature to them, then apply our GNN</td>
+<td>Low. <strong>Connot generalize to new nodes:</strong> new nodes introduce new IDs, GNN doesn’t know how to embed unseen IDs</td>
+</tr>
+<tr>
+<td>Computational cost</td>
+<td>Low. Only 1 dimensional feature</td>
+<td>High. $O\left(V\right)$ dimensional feature, cannot apply to large graphs</td>
+</tr>
+<tr>
+<td>Use cases</td>
+<td><strong>Any graph, inductive settings (generalize to new nodes)</strong></td>
+<td><strong>Small graph, transductive settings (no new nodes)</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="1-2-2-某些结构对于GNN很难学习"><a href="#1-2-2-某些结构对于GNN很难学习" class="headerlink" title="1.2.2 某些结构对于GNN很难学习"></a>1.2.2 某些结构对于GNN很难学习</h5><p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-24_17-17-07.png" alt=""></p>
+<ul>
+<li>所有图中结点度数为2</li>
+<li>计算图为相同的二叉树</li>
+</ul>
+<p><strong>解决方法：</strong></p>
+<p>使用循环计数信息来增加结点特征</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-24_17-21-26.png" alt=""></p>
+<p>其他常用的增强特征的方法：</p>
+<ul>
+<li>Node degree</li>
+<li>Clustering coefficient</li>
+<li>PageRank</li>
+<li>Centrality</li>
+</ul>
+<hr>
+<h4 id="1-3-The-graph-is-too-sparse-rightarrow-Add-virtual-nodes-edges"><a href="#1-3-The-graph-is-too-sparse-rightarrow-Add-virtual-nodes-edges" class="headerlink" title="1.3 The graph is too sparse: $\rightarrow$ Add virtual nodes/edges"></a>1.3 The graph is <strong>too sparse:</strong> $\rightarrow$ <strong>Add virtual nodes/edges</strong></h4><h5 id="1-3-1-增加虚拟边"><a href="#1-3-1-增加虚拟边" class="headerlink" title="1.3.1 增加虚拟边"></a>1.3.1 增加虚拟边</h5><ul>
+<li><strong>Connect 2-hop neighbors via virtual edges</strong></li>
+<li><p>邻接矩阵 $A\rightarrow A+A^2$</p>
+</li>
+<li><p><strong>Use cases:</strong> Bipartite graphs</p>
+</li>
+</ul>
+<h5 id="1-3-2-增加虚拟结点"><a href="#1-3-2-增加虚拟结点" class="headerlink" title="1.3.2 增加虚拟结点"></a>1.3.2 增加虚拟结点</h5><ul>
+<li>虚拟结点连接图中所有点</li>
+<li>不需要很深的神经网络用于通信</li>
+<li>所有结点之间有：<strong>Node A – Virtual – Node B</strong></li>
+<li><strong>Benefits:</strong> Greatly improves message passing in sparse graphs</li>
+</ul>
+<h4 id="1-4-The-graph-is-too-dense-rightarrow-Node-Neighborhood-Sampling"><a href="#1-4-The-graph-is-too-dense-rightarrow-Node-Neighborhood-Sampling" class="headerlink" title="1.4 The graph is too dense: $\rightarrow$ Node Neighborhood Sampling"></a>1.4 The graph is <strong>too dense:</strong> $\rightarrow$ Node Neighborhood Sampling</h4><p><strong>Idea:</strong> (Randomly) sample a node’s neighborhood for message passing</p>
+<p>尽管可以随机，但有更好的启发式方法</p>
+<ul>
+<li>随机选择两个邻居来传递给定层的消息</li>
+<li>在下一次训练，选取不同的邻居来传递消息</li>
+<li>极大降低计算成本</li>
+</ul>
+<hr>
+<h3 id="2-Training-Graph-Neural-Networks"><a href="#2-Training-Graph-Neural-Networks" class="headerlink" title="2. Training Graph Neural Networks"></a>2. Training Graph Neural Networks</h3><p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-24_21-55-42.png" alt=""></p>
+<h4 id="2-1-Different-prediction-heads"><a href="#2-1-Different-prediction-heads" class="headerlink" title="2.1 Different prediction heads"></a>2.1 Different prediction heads</h4><ul>
+<li>Node-level tasks</li>
+<li>Edge-level tasks</li>
+<li>Graph-level tasks</li>
+</ul>
+<h5 id="2-1-1-Node-level-prediction"><a href="#2-1-1-Node-level-prediction" class="headerlink" title="2.1.1 Node-level prediction"></a>2.1.1 Node-level prediction</h5><p>直接使用结点嵌入进行预测，在 GNN 计算之后，我们有 $d$ 维嵌入：$\left\{h_v^{(l)}\in \mathbb{R}^d,\forall v\in G\right\}$</p>
+<p>如果要进行 $k$ 路预测，比如 $k$ 类的分类或者 $k$ 个目标的回归</p>
 <script type="math/tex; mode=display">
-\min_{\Theta} \mathcal{L}(\boldsymbol{y},f(\boldsymbol{x}))</script><p>$\Theta$ 为优化的参数，可能包含一个或多个标量、向量、矩阵</p>
-<p>$\mathcal{L}$ 损失函数</p>
-<p>梯度向量：$\triangledown_{\Theta}\mathcal{L}=(\frac{\partial\mathcal{L}}{\partial\Theta_1},\frac{\partial\mathcal{L}}{\partial\Theta_2},\dots)$</p>
-<p>迭代算法：$\Theta\leftarrow\Theta-\eta \frac{\partial\mathcal{L}}{\partial\Theta}$</p>
-<p>SGD &amp; Minibatch SGD</p>
-<p>Back-propagation</p>
-<p>Non-linearity</p>
-<p>MLP</p>
-<h3 id="2-Deep-Learning-for-Graphs"><a href="#2-Deep-Learning-for-Graphs" class="headerlink" title="2. Deep Learning for Graphs"></a>2. Deep Learning for Graphs</h3><blockquote>
-<p><strong>Assume we have a graph $G$</strong></p>
-<p>$V$ is the vertex set</p>
-<p>$A$ is the adjacency matrix (assume binary)</p>
-<p>$X\in \mathbb{R}^{m\times |V|}$ is a matrix of node features</p>
-<p>$v$ a node in $V$; $N(v)$ the set of neighbors of $v$</p>
-</blockquote>
-<h4 id="2-1-A-Naive-Approach"><a href="#2-1-A-Naive-Approach" class="headerlink" title="2.1 A Naive Approach"></a>2.1 A Naive Approach</h4><p>Join adjacency matrix and features and feed them into a deep nerual net</p>
-<p>有几个问题：</p>
-<ul>
-<li>$O(|V|)$ 参数个数</li>
-<li>这个模型不适用于不同尺寸的图形</li>
-<li>这种方法对结点排序敏感，而图中没有固定的排序</li>
-</ul>
-<h4 id="2-2-Convolutional-Networks"><a href="#2-2-Convolutional-Networks" class="headerlink" title="2.2 Convolutional Networks"></a>2.2 Convolutional Networks</h4><p>考虑图像上的卷积，但对于图而言，并不清楚如何定义窗口的概念，也不清楚如何定义在图形上滑动窗口的概念。</p>
-<p><strong>Idea: </strong></p>
-<ul>
-<li>transform information at the neighbors and combine it</li>
-<li>node’s neighborhood defines a computation graph</li>
-<li>learn how to propagate information across the graph to compute node features</li>
-</ul>
-<h5 id="2-2-1-Aggregate-Neighbors"><a href="#2-2-1-Aggregate-Neighbors" class="headerlink" title="2.2.1 Aggregate Neighbors"></a>2.2.1 Aggregate Neighbors</h5><p><strong>Key idea: </strong>基于目标结点周围邻域的局部结构生成结点嵌入</p>
-<p><strong>Intuition</strong>: 与经典神经网络的根本不同的是每个结点都可以定义自己的神经网络架构或者每个结点都可以基于它周围的网络结构定义它自己的计算图。</p>
-<p>现在我们要同时训练或学习多个架构？</p>
-<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-17_22-36-40.png" alt=""></p>
-<p>Deep Model: Many Layers</p>
-<ul>
-<li>模型可以是任意深度的</li>
-<li>结点在每一层都有嵌入</li>
-<li>结点 $u$ 在第0层的嵌入被初始化为输入特征 $x_u$</li>
-<li>第 $k$ 层嵌入的信息来自距离 $k$ 跳远的结点</li>
-</ul>
-<p>此外，我们还需要置换不变的聚合运算符，我们需要聚合的结果与顺序无关。</p>
-<p>那么盒子中放了什么？如何定义这些转换？怎么参数化？如何学习？</p>
-<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-17_22-52-39.png" alt=""></p>
-<h5 id="2-2-2-Basic-approach"><a href="#2-2-2-Basic-approach" class="headerlink" title="2.2.2 Basic approach"></a>2.2.2 Basic approach</h5><p>简单平均来自邻居的信息然后应用神经网络</p>
+\hat{y}_v=Head_{node}(h_v^{(L)})=W^{(H)}h_v^{(L)}</script><p>$W^{(H)}$ 将嵌入从 $h_v^{(L)}\in \mathbb{R}^{k\times d}$ 映射到 $\hat{y}_v\in \mathbb{R}^k$ 用于计算损失</p>
+<h5 id="2-1-2-Edge-level-prediction"><a href="#2-1-2-Edge-level-prediction" class="headerlink" title="2.1.2 Edge-level prediction"></a>2.1.2 Edge-level prediction</h5><p>使用结点嵌入对进行预测，$k$ 路预测</p>
 <script type="math/tex; mode=display">
-\begin{equation}
-\begin{aligned}
-&h_v^0=x_v\\
-&h_v^{(l+1)}=\sigma(W_l\sum_{u\in N(v)}\frac{h_u^{(l)}}{|N(v)|}+B_lh_v^{(l)}), \forall l\in \left\{0,\dots,L-1\right\}\\
-&z_v=h_v^{(L)}
-\end{aligned}
-\end{equation}</script><p>$h_v^0$ 是结点 $v$ 在第0层的嵌入为结点的特征表示</p>
-<p>高阶嵌入：</p>
-<ul>
-<li>$h_v^{(l)}$ 是结点 $v$ 在第 $l$ 层的嵌入</li>
-<li>用矩阵 $B_l$ 进行变换</li>
-<li>$\sum_{u\in N(v)}\frac{h_u^{(l)}}{|N(v)|}$ 前一层邻居嵌入的平均</li>
-<li>用矩阵 $W_l$ 进行变换</li>
-<li>再通过一个非线性变换</li>
-</ul>
-<p>$z_v$ 是 $L$ 层邻居聚合后的嵌入</p>
-<p>如果每个结点都有自己的计算架构，我们如何训练模型？</p>
-<p>参数 $W_l$ 和 $B_l$ 不是由结点索引的，所有结点使用相同的变换矩阵</p>
-<h5 id="2-2-3-矩阵形式"><a href="#2-2-3-矩阵形式" class="headerlink" title="2.2.3 矩阵形式"></a>2.2.3 矩阵形式</h5><p>$H^{(l)}=[h_1^{(l)}\dots h_{|V|}^{(l)}]^T$</p>
-<p>$\sum_{u\in N_v}h_u^{(l)}=A_{v,:}H^{(l)}$</p>
-<p>$D$ 为对角阵，$D_{v,v}=deg(v)=|N(v)|$，那么 $D_{v,v}^{-1}=1/|N(v)|$</p>
-<script type="math/tex; mode=display">
-\sum_{u\in N(v)}\frac{h_u^{(l-1)}}{|N(v)|} \Longrightarrow H^{(l+1)}=D^{-1}AH^{(l)}</script><p>所以</p>
-<script type="math/tex; mode=display">
-H^{(l+1)}=\sigma({\color{Red}\tilde{A}H^{(l)}W_l^T}+{\color {Blue}H^{(l)}B_l^T})</script><p>$\tilde{A}=D^{-1}A$ 是稀疏矩阵，在实际中，可以使用高效的稀疏矩阵乘法。</p>
-<p>Red: neighborhood aggregation</p>
-<p>Blue: self transformation</p>
-<h5 id="2-2-4-Model-Design-Overview"><a href="#2-2-4-Model-Design-Overview" class="headerlink" title="2.2.4 Model Design: Overview"></a>2.2.4 Model Design: Overview</h5><ol>
-<li>定义邻域聚合函数</li>
-<li>定义嵌入的损失函数</li>
-<li>在一批结点上训练</li>
-<li>为需要的结点生成嵌入</li>
+\hat{y}_{uv}=Head_{edge}(h_u^{(L)},h_v^{(L)})</script><p><strong>Options for $Head_{edge}(h_u^{(L)},h_v^{(L)})$</strong></p>
+<ol>
+<li><strong>Concatenation + Linear</strong></li>
 </ol>
-<p>可以将我们的模型应用于训练期从未见过的结点，模型具有归纳能力。</p>
-<h3 id="3-A-General-GNN-Framework"><a href="#3-A-General-GNN-Framework" class="headerlink" title="3. A General GNN Framework"></a>3. A General GNN Framework</h3><ul>
-<li>GNN Layer = Message + Aggregation</li>
-<li>Connect GNN layers into a GNN</li>
-<li>Raw input graph $\neq$ computational graph<ul>
-<li>Graph feature augmentation</li>
-<li>Graph structure manipulation</li>
+<ul>
+<li>$\hat{y}_{uv}=Linear(Concat(h_u^{(L)},h_v^{(L)}))$</li>
+<li>Linear$(\cdot)$ 将 $2d$ 维嵌入映射到 $k$ 维嵌入</li>
+</ul>
+<ol>
+<li><strong>Dot product</strong></li>
+</ol>
+<ul>
+<li>$\hat{y}_{uv}=(h_u^{(L)})^Th_v^{(L)}$</li>
+<li>只能用于 1 路预测，比如边的存在性</li>
+<li>推广到 $k$ 路预测，与 Multi-head attention 类似，可供训练的参数 $W^{(1)},\dots,W^{(k)}$</li>
+</ul>
+<script type="math/tex; mode=display">
+\hat{y}_{uv}^{(1)}=(h_u^{(L)})^TW^{(1)}h_v^{(L)}</script><script type="math/tex; mode=display">
+\dots</script><script type="math/tex; mode=display">
+\hat{y}_{uv}^{(k)}=(h_u^{(L)})^TW^{(k)}h_v^{(L)}</script><script type="math/tex; mode=display">
+\hat{y}_{uv}=Concat(\hat{y}_{uv}^{(1)},\dots,\hat{y}_{uv}^{(k)})\in\mathbb{R}^k</script><h5 id="2-1-3-Graph-level-prediction"><a href="#2-1-3-Graph-level-prediction" class="headerlink" title="2.1.3 Graph-level prediction"></a>2.1.3 Graph-level prediction</h5><p>使用所有结点嵌入做预测，$k$ 路预测</p>
+<script type="math/tex; mode=display">
+\hat{y}_G=Head_{graph}\left(\left\{h_v^{(L)}\in \mathbb{R}^d,\forall v\in G\right\}\right)</script><p><strong>$Head_{graph}(\cdot)$ 与 GNN 层中的 AGG$(\cdot)$ 类似</strong></p>
+<p><strong>Options for $Head_{graph}\left(\left\{h_v^{(L)}\in \mathbb{R}^d,\forall v\in G\right\}\right)$</strong></p>
+<ol>
+<li>Global mean pooling</li>
+<li>Global max pooling</li>
+<li>Global sum pooling</li>
+</ol>
+<script type="math/tex; mode=display">
+\hat{y}_G=Mean/Max/Sum\left(\left\{h_v^{(L)}\in \mathbb{R}^d,\forall v\in G\right\}\right)</script><p>这些选择在较小的图上表现更好，对于较大的图呢？</p>
+<p>在较大图上全局池化会损失大量信息</p>
+<blockquote>
+<p> <strong>Toy example:</strong></p>
+<ul>
+<li>Node embeddings for $G_1$: {-1, -2, 0, 1, 2}</li>
+<li>Node embeddings for $G_2$: {-10, -20, 0, 10, 20}</li>
+<li>Clearly $G_1$ and $G_2$ have very different node embeddings $\rightarrow$ Their structures should be different</li>
+<li><strong>If we do global sum pooling</strong></li>
+<li>prediction for $G_1$: $\hat{y}_G=Sum(\left\{-1, -2, 0, 1,2\right\})=0$</li>
+<li>prediction for $G_2$: $\hat{y}_G=Sum(\left\{-10, -20, 0, 10,20\right\})=0$</li>
+<li><strong>We cannot differentiate them</strong></li>
+</ul>
+</blockquote>
+<p><strong>Hierarchical Global Pooling</strong></p>
+<blockquote>
+<ul>
+<li>We will aggregate via ReLU(Sum$(\cdot)$)<ul>
+<li>We first separately aggregate the first 2 nodes and last 3 nodes</li>
+<li>Then we aggregate again to make the fianl prediction</li>
 </ul>
 </li>
-<li>Learning objective<ul>
-<li>Supervised/Unsupervised</li>
-<li>Node/Edge/Graph level objectives</li>
+<li>$G_1$: {-1, -2, 0, 1, 2}<ul>
+<li>$\hat{y}_a=ReLU(Sum(\left\{-1, -2\right\}{}))=0,\hat{y}_b=ReLU(Sum(\left\{0,1, 2\right\}{}))=3$</li>
+<li>$\hat{y}_G=ReLU(\left\{\hat y_a, \hat y_b\right\})=3$</li>
+</ul>
+</li>
+<li>$G_2$: {-10, -20, 0, 10, 20}<ul>
+<li>$\hat{y}_a=ReLU(Sum(\left\{-10, -20\right\}{}))=0,\hat{y}_b=ReLU(Sum(\left\{0,10, 20\right\}{}))=30$</li>
+<li>$\hat{y}_G=ReLU(\left\{\hat y_a, \hat y_b\right\})=30$</li>
 </ul>
 </li>
 </ul>
-<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-18_17-08-02.png" alt=""></p>
+</blockquote>
+<p><strong>Hierarchical Pooling In Pracice</strong></p>
+<p><strong>DiffPool idea</strong></p>
+<ul>
+<li>Hierarchically pool node embeddings</li>
+<li>Leverage 2 independent GNNs at each level<ul>
+<li>GNN A: Compute node embeddings</li>
+<li>GNN B: Compute the cluster that a node belongs to</li>
+</ul>
+</li>
+<li>GNNs A and B at each level can be executed in parallel</li>
+</ul>
+<h4 id="2-2-Predictions-and-Labels"><a href="#2-2-Predictions-and-Labels" class="headerlink" title="2.2 Predictions and Labels"></a>2.2 Predictions and Labels</h4><ul>
+<li>Supervised labels<ul>
+<li>Labels come from external sources</li>
+</ul>
+</li>
+<li>Unsupervised signals<ul>
+<li>Signals come from graph themselves</li>
+</ul>
+</li>
+<li>Somtimes the differences are blurry</li>
+</ul>
+<h5 id="2-2-1-Supervised-Labels-on-Graphs"><a href="#2-2-1-Supervised-Labels-on-Graphs" class="headerlink" title="2.2.1 Supervised Labels on Graphs"></a>2.2.1 Supervised Labels on Graphs</h5><p>监督标签来自特定的用例</p>
+<ul>
+<li>Node labels $y_v$: 在引文网络中，一个结点属于哪个主题区域</li>
+<li>Edge labels $y_{uv}$: 在交易网络中，哪些边（交易）是欺诈的</li>
+<li>Graph labels $y_G$: 在分子图中，图的药物相似性</li>
+</ul>
+<p><strong>Advice: Reduce your task to node / edge / graph labels, since they are easy to work with</strong>, E.g., we knew some nodes form a cluster. We can treat the cluster that a node belongs to as a node label</p>
+<h5 id="2-2-2-Unsupervised-Signals-on-Graphs"><a href="#2-2-2-Unsupervised-Signals-on-Graphs" class="headerlink" title="2.2.2 Unsupervised Signals on Graphs"></a>2.2.2 Unsupervised Signals on Graphs</h5><p>有时候我们只有图，没有任何的外部标签。</p>
+<p><strong>The solution:</strong> 定义自监督学习任务，监督信息来自输入图本身</p>
+<p>let GNN predict the following:</p>
+<ul>
+<li>Node-level $y_v$: Node statistics: such as clustering coefficient, PageRank</li>
+<li>Edge-level $y_{uv}$: Link prediction: hide the edge between two nodes, predict if there should be a link</li>
+<li>Graph-level $y_G$: Graph statistics: for example, predict if two graphs are isomorphic4</li>
+</ul>
+<h4 id="2-3-Loss-function"><a href="#2-3-Loss-function" class="headerlink" title="2.3 Loss function"></a>2.3 Loss function</h4><ul>
+<li>Classification loss</li>
+<li>Regression loss</li>
+</ul>
+<p><strong>We have $N$ data points</strong></p>
+<ul>
+<li>Each data point can be a node / edge / graph</li>
+<li>Node-level: prediction $\hat{y}_v^{(i)}$, label $y_v^{(i)}$</li>
+<li>Edge-level: prediction $\hat{y}_{uv}^{(i)}$, label $y_{uv}^{(i)}$</li>
+<li>Graph-level: prediction $\hat{y}_G^{(i)}$, label $y_G^{(i)}$</li>
+</ul>
+<p>统一记作 prediction $\hat{y}^{(i)}$, label $y^{(i)}$</p>
+<blockquote>
+<p>Classification or Regression</p>
+<p><strong>Classification:</strong> $y^{(i)}$ 为离散的分类值</p>
+<p><strong>Regression:</strong>  $y^{(i)}$ 为连续值</p>
+<p><strong>Differences:</strong> loss function &amp; evaluation metrics</p>
+</blockquote>
+<ul>
+<li>Classification Loss use cross entropy</li>
+</ul>
+<script type="math/tex; mode=display">
+Loss=\sum_{i=1}^NCE(y^{(i)},\hat{y}^{(i)})</script><script type="math/tex; mode=display">
+CE(y^{(i)},\hat{y}^{(i)})=-\sum_{j=1}^Ky_j^{(i)}\log(\hat{y}_j^{(i)})</script><ul>
+<li>Regression Loss use Mean Squared Error (MSE)</li>
+</ul>
+<script type="math/tex; mode=display">
+Loss=\sum_{i=1}^NMSE(y^{(i)},\hat{y}^{(i)})</script><script type="math/tex; mode=display">
+MSE(y^{(i)},\hat{y}^{(i)})=-\sum_{j=1}^K(y_j^{(i)}-\hat{y}_j^{(i)})^2</script><h4 id="2-4-Evaluation-metrics"><a href="#2-4-Evaluation-metrics" class="headerlink" title="2.4 Evaluation metrics"></a>2.4 Evaluation metrics</h4><ul>
+<li>Accuracy</li>
+<li>ROC AUC</li>
+</ul>
+<hr>
+<p><strong>Regression</strong> </p>
+<ul>
+<li>Root mean square error (RMSE)</li>
+</ul>
+<script type="math/tex; mode=display">
+\sqrt{\sum_{i=1}^N\frac{(y^{(i)}-\hat{y}^{(i)})^2}{N}}</script><ul>
+<li>Mean absolute error (MAE)</li>
+</ul>
+<script type="math/tex; mode=display">
+\sum_{i=1}^N\frac{|y^{(i)}-\hat{y}^{(i)}|}{N}</script><hr>
+<p><strong>Classification</strong></p>
+<ul>
+<li>Mutil-class Classification</li>
+</ul>
+<script type="math/tex; mode=display">
+\frac{1[argmax(\hat{y}^{(i)})=y^{(i)}]}{N}</script><ul>
+<li><p>Binary Classification</p>
+<ul>
+<li>Metrics sensitive to classification threshold<ul>
+<li>Accuracy</li>
+<li>Precision / Recall</li>
+<li>If the range of prediction is [0,1], we will use 0.5 as threshold</li>
+</ul>
+</li>
+<li>Metric Agnostic to classification threshold<ul>
+<li>ROC AUC</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Accuracy:</p>
+<script type="math/tex; mode=display">
+\frac{TP+TN}{TP+TN+FP+FN}=\frac{TP+TN}{|Dataset|}​</script></li>
+<li><p>Precision (P):</p>
+</li>
+</ul>
+<script type="math/tex; mode=display">
+\frac{TP}{TP+FP}</script><ul>
+<li>Recall (R):</li>
+</ul>
+<script type="math/tex; mode=display">
+\frac{TP}{TP+FN}</script><ul>
+<li>F1-Score:</li>
+</ul>
+<script type="math/tex; mode=display">
+\frac{2P*R}{P+R}</script><ul>
+<li>ROC Curve </li>
+</ul>
+<p>横轴为 FPR，纵轴为 TPR </p>
+<script type="math/tex; mode=display">
+TPR=Recall=\frac{TP}{TP+FN}</script><script type="math/tex; mode=display">
+FPR=\frac{FP}{FP+TN}</script><ul>
+<li>ROC AUC: Area under the ROC Curve</li>
+</ul>
+<hr>
+<h3 id="3-Dataset"><a href="#3-Dataset" class="headerlink" title="3. Dataset"></a>3. Dataset</h3><h4 id="3-1-Dataset-Split-Fixed-Random-Split"><a href="#3-1-Dataset-Split-Fixed-Random-Split" class="headerlink" title="3.1 Dataset Split: Fixed / Random Split"></a><strong>3.1 Dataset Split: Fixed / Random Split</strong></h4><ul>
+<li>Fixed split<ul>
+<li>Training set</li>
+<li>Validation set</li>
+<li>Test set</li>
+</ul>
+</li>
+<li>Random split: we will randomly split out dataset into training / validation/ test<ul>
+<li>We report average performance over different random seeds</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-2-Why-Splitting-Graphs-is-Special"><a href="#3-2-Why-Splitting-Graphs-is-Special" class="headerlink" title="3.2 Why Splitting Graphs is Special"></a>3.2 Why Splitting Graphs is Special</h4><ul>
+<li><p>Image classification: Each data point is an image</p>
+<ul>
+<li>Here data points are independent</li>
+</ul>
+</li>
+<li><p>Node classification: Each data point is a node</p>
+<ul>
+<li>Here data points are NOT independent</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-3-Solution"><a href="#3-3-Solution" class="headerlink" title="3.3 Solution"></a>3.3 Solution</h4><h5 id="3-3-1-Transductive-setting"><a href="#3-3-1-Transductive-setting" class="headerlink" title="3.3.1 Transductive setting:"></a>3.3.1 Transductive setting:</h5><p>The input graph can be observed in all the dataset splits (training, validation and test set)</p>
+<p><strong>We will only split the (node) label</strong></p>
+<ul>
+<li>At training time, we compute embeddings using the entire graph, and train using node 1&amp;2’s labels</li>
+<li>At validation time, we compute embeddings using the entire graph, and evaluate on node 3&amp;4’s labels</li>
+</ul>
+<h5 id="3-3-2-Inductive-setting"><a href="#3-3-2-Inductive-setting" class="headerlink" title="3.3.2 Inductive setting:"></a>3.3.2 Inductive setting:</h5><p>We break the edges between splits to get multiple graphs</p>
+<ul>
+<li>At training time, we compute embeddings using the graph over node 1&amp;2, and train using node 1&amp;2’s labels</li>
+<li>At validation time, we compute embeddings using the graph over node 3&amp;4, and evaluate on node 3&amp;4’s labels</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Transductive setting</th>
+<th>Inductive setting</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>on the same graph</td>
+<td>on different graph</td>
+</tr>
+<tr>
+<td>The dataset <strong>consists of one graph</strong></td>
+<td>The dataset <strong>consists of multiple graphs</strong></td>
+</tr>
+<tr>
+<td>The entire graph can be observed in all dataset splits, we only split the labels</td>
+<td>Each split can only observe the graph within the split. A successful model should generalize to unseen graphs</td>
+</tr>
+<tr>
+<td>Only applicable to <strong>node / edge</strong> prediction tasks</td>
+<td>Applicable to <strong>node / edge / graph</strong> tasks</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-4-Graph-Classification"><a href="#3-4-Graph-Classification" class="headerlink" title="3.4 Graph Classification"></a>3.4 Graph Classification</h4><p>Only the <strong>inductive setting</strong> is well defined for graph classification</p>
+<p>这里有多个图，将它们分别放入训练、验证和测试集</p>
+<h4 id="3-5-Link-Prediction"><a href="#3-5-Link-Prediction" class="headerlink" title="3.5 Link Prediction"></a>3.5 Link Prediction</h4><p>predict missing edges</p>
+<ul>
+<li>Setting up link prediction is tricky</li>
+<li>Link prediction is unsupervised / self-supervised task. We need to create the labels and dataset splits on our own</li>
+<li>Concretely, we need to <strong>hide some edges from GNN and let the GNN predict if the edges exist</strong></li>
+</ul>
+<blockquote>
+<p>For link prediction, <strong>we will split edges twice</strong></p>
+<ul>
+<li>Step 1: <strong>Assign 2 types of edges in the original graph</strong><ul>
+<li><strong>Message edges:</strong> Used for GNN message passing</li>
+<li><strong>Supervision edges:</strong> Used for computing objectives</li>
+<li><strong>After step 1:</strong><ul>
+<li>Only message edges will remain in the graph</li>
+<li>Supervision edges are used as supervision for edge predictions made by the model, will not be fed into GNN!</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Step 2: <strong>Split edges into train / validation / test</strong></li>
+<li><strong>Option 1: Inductive link prediction split</strong><ul>
+<li>Suppose we have a dataset of 3 graphs. Each inductive split will contain an independent graph</li>
+<li>In train or val or test set, each graph will have 2 type of edges: message edges + supervision edges<ul>
+<li>Supervision edges are not the input to GNN</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Option 2: Transductive link prediction split</strong><ul>
+<li>This is the default setting when people talk about link prediction</li>
+<li>Suppose we have a dataset of 1 graph</li>
+<li><strong>By defination of “transductive”, the entire graph can be observed in all dataset splits</strong></li>
+<li>But since edges are both part of graph structure and the supervision, we need to hold out validation / test edges</li>
+<li>To train the training set, we further need to hold out supervision edges for the training set </li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-25_22-08-34.png" alt=""></p>
+<p><strong>Summary: Transductive link prediction split:</strong></p>
+<ul>
+<li>Training message edges</li>
+<li>Training supervision edges</li>
+<li>Validation edges</li>
+<li>Test edges</li>
+</ul>
+<p>Luckily, we have full support in DeepSNAP and GraphGym</p>
 
                 
             </div>
@@ -527,7 +826,7 @@ H^{(l+1)}=\sigma({\color{Red}\tilde{A}H^{(l)}W_l^T}+{\color {Blue}H^{(l)}B_l^T})
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://zxwx1111.github.io/posts/3428813921/">https://zxwx1111.github.io/posts/3428813921/</a>
+                    <a href="https://zxwx1111.github.io/posts/575794509/">https://zxwx1111.github.io/posts/575794509/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -612,17 +911,18 @@ H^{(l+1)}=\sigma({\color{Red}\tilde{A}H^{(l)}W_l^T}+{\color {Blue}H^{(l)}B_l^T})
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/posts/1431756251/">
+                <a href="/posts/575794509/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="cs224w-06">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="cs224w-07">
                         
-                        <span class="card-title">cs224w-06</span>
+                        <span class="card-title">cs224w-07</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -632,9 +932,9 @@ H^{(l+1)}=\sigma({\color{Red}\tilde{A}H^{(l)}W_l^T}+{\color {Blue}H^{(l)}B_l^T})
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-06-21
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-06-24
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -643,6 +943,7 @@ H^{(l+1)}=\sigma({\color{Red}\tilde{A}H^{(l)}W_l^T}+{\color {Blue}H^{(l)}B_l^T})
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -661,13 +962,13 @@ H^{(l+1)}=\sigma({\color{Red}\tilde{A}H^{(l)}W_l^T}+{\color {Blue}H^{(l)}B_l^T})
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/posts/1203422807/">
+                <a href="/posts/1431756251/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="cs224w-04">
+                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="cs224w-06">
                         
-                        <span class="card-title">cs224w-04</span>
+                        <span class="card-title">cs224w-06</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -678,7 +979,7 @@ H^{(l+1)}=\sigma({\color{Red}\tilde{A}H^{(l)}W_l^T}+{\color {Blue}H^{(l)}B_l^T})
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-06-15
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-06-21
                             </span>
                         <span class="publish-author">
                             
