@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="cs224w-06, Xu Qian的博客">
+    <meta name="keywords" content="cs224w-08, Xu Qian的博客">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>cs224w-06 | Xu Qian的博客</title>
+    <title>cs224w-08 | Xu Qian的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -205,12 +205,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/8.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/6.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">cs224w-06</h1>
+                    <h1 class="description center-align post-title">cs224w-08</h1>
                 </div>
             </div>
         </div>
@@ -342,7 +342,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-06-21
+                    2021-06-28
                 </div>
                 
 
@@ -351,7 +351,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.8k
+                    1.1k
                 </div>
                 
 
@@ -371,265 +371,207 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h3 id="1-A-Single-Layer-of-a-GNN"><a href="#1-A-Single-Layer-of-a-GNN" class="headerlink" title="1. A Single Layer of a GNN"></a>1. A Single Layer of a GNN</h3><p>GNN Layer = Message + Aggregation</p>
-<h4 id="1-1-Message-Computation"><a href="#1-1-Message-Computation" class="headerlink" title="1.1 Message Computation"></a>1.1 Message Computation</h4><script type="math/tex; mode=display">
-m_u^{(l)}=MSG^{(l)}(h_u^{(l-1)})</script><ul>
-<li><strong>Intuition: </strong>Each node will create a message, which will be sent to other nodes later</li>
-<li><strong>Example: </strong>$m_u^{(l)}=W^{(l)}h_u^{(l-1)}$</li>
-</ul>
-<h4 id="1-2-Message-Aggregation"><a href="#1-2-Message-Aggregation" class="headerlink" title="1.2 Message Aggregation"></a>1.2 Message Aggregation</h4><script type="math/tex; mode=display">
-h_v^{(l)}=AGG^{(l)}\left(\left\{m_u^{(l)},u \in N(v)\right\}\right)</script><ul>
-<li><p><strong>Intuition: </strong>Each node will aggregate the messages from node $v$’s neighbors</p>
-</li>
-<li><p><strong>Example: </strong>Sum($\cdot$), Mean($\cdot$) or Max($\cdot$)</p>
-</li>
-</ul>
-<h4 id="1-3-Issue"><a href="#1-3-Issue" class="headerlink" title="1.3 Issue"></a>1.3 Issue</h4><p>来自结点 $v$ 本身的信息可能会丢失，$h_v^{(l)}$ 并不直接依赖 $h_v^{(l-1)}$</p>
-<p>解决方法是计算 $h_v^{(l)}$ 时包含 $h_v^{(l-1)}$</p>
+                <h3 id="1-Theory-of-GNNs"><a href="#1-Theory-of-GNNs" class="headerlink" title="1. Theory of GNNs"></a>1. Theory of GNNs</h3><p><strong>How powerful are GNNs？</strong></p>
+<blockquote>
+<p>Many GNN models have been proposed (e.g., GCN, GAT, GraphSAGE, design space)</p>
+<p>What is the expressive power (ability to distinguish different graph structures) of thesee GNN models?</p>
+<p>How to design a maximally expressive GNN model?</p>
+</blockquote>
 <ul>
-<li><strong>Message: </strong><ul>
-<li>$m_u^{(l)}=W^{(l)}h_u^{(l-1)}$ </li>
-<li>$m_v^{(l)}=B^{(l)}h_v^{(l-1)}$</li>
+<li>GCN (mean-pool)</li>
+<li>GraphSAGE (max-pool)</li>
 </ul>
-</li>
-<li><strong>Aggregation: </strong><ul>
-<li>$h_v^{(l)}=CONCAT\left(AGG\left(\left\{m_u^{(l)},u \in N(v\right\}\right),m_v^{(l)}\right)$</li>
-</ul>
-</li>
-</ul>
-<h4 id="1-4-Putting-things-together"><a href="#1-4-Putting-things-together" class="headerlink" title="1.4 Putting things together"></a>1.4 Putting things together</h4><ul>
-<li>Message: </li>
-</ul>
-<script type="math/tex; mode=display">
-m_u^{(l)}=MSG^{(l)}(h_u^{(l-1)}), u \in \left\{N(v)\cup v\right\}</script><ul>
-<li>Aggregation: </li>
-</ul>
-<script type="math/tex; mode=display">
-h_v^{(l)}=AGG\left(\left\{m_u^{(l)},u \in N(v\right\},m_v^{(l)}\right)</script><ul>
-<li>Nonlinearity activation: 增加表现力<ul>
-<li>Often written as $\sigma(\cdot)$</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="2-Classical-GNN-Layers"><a href="#2-Classical-GNN-Layers" class="headerlink" title="2. Classical GNN Layers"></a>2. Classical GNN Layers</h3><h4 id="2-1-GCN"><a href="#2-1-GCN" class="headerlink" title="2.1 GCN"></a>2.1 GCN</h4><script type="math/tex; mode=display">
-h_v^{(l)}=\sigma\left(W^{(l)}\sum_{u \in N(v)}\frac{h_u^{(l-1)}}{|N(v)|}\right)</script><p>重写为</p>
-<script type="math/tex; mode=display">
-h_v^{(l)}=\sigma\left(\sum_{u\in N(v)}W^{(l)}\frac{h_u^{(l-1)}}{|N(v)|}\right)</script><ul>
-<li><strong>Message:</strong> $m_u^{(l)}=\frac{1}{|N(v)|}W^{(l)}h_u^{(l-1)}$</li>
-<li><strong>Aggregation: </strong>$h_v^{(l)}=\sigma\left(Sum\left(\left\{m_u^{(l),},u\in N(v)\right\}\right)\right)$</li>
-</ul>
-<h4 id="2-2-GraphSAGE"><a href="#2-2-GraphSAGE" class="headerlink" title="2.2 GraphSAGE"></a>2.2 GraphSAGE</h4><script type="math/tex; mode=display">
-h_v^{(l)}=\sigma\left(W^{(l)}\cdot CONCAT\left(h_v^{(l-1)},AGG\left(\left\{h_u^{(l-1)},\forall u \in N(v)\right\}\right)\right)\right)</script><ul>
-<li><p><strong>Message:</strong> AGG$(\cdot)$</p>
-</li>
-<li><p><strong>Two=stage Aggregation: </strong></p>
+<p><em>we use node same/different <strong>colors</strong> to represent nodes with same/different features.</em></p>
+<p><em>We specifically consider <strong>local neighborhood structures</strong> around each node in a graph</em></p>
+<p><strong>Can GNN node embeddings distinguish different node’s local neighborhood structures?</strong></p>
+<h4 id="1-1-How-a-GNN-captures-local-neighborhood-structures"><a href="#1-1-How-a-GNN-captures-local-neighborhood-structures" class="headerlink" title="1.1 How a GNN captures local neighborhood structures?"></a>1.1 How a GNN captures local neighborhood structures?</h4><p><strong>Computational graph</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-28_22-31-15.png" alt=""></p>
+<p><strong>Rooted subtree structures:</strong> defined by recursively unfolding neighboring nodes from the root nodes</p>
+<p>GNN’s node embeddings capture rooted subtree structures</p>
+<p>Most expressive GNN maps different rooted into different node embedding (represented by different colors)</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-28_22-51-06.png" alt=""></p>
+<h4 id="1-2-Injective-Function"><a href="#1-2-Injective-Function" class="headerlink" title="1.2 Injective Function"></a>1.2 Injective Function</h4><p><strong>Most expressive GNN should map subtrees to the node embeddings injectively</strong></p>
+<p><strong>Key observation:</strong> Subtrees of the same depth can be recursively characterized from the leaf nodes to the root nodes</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-28_23-00-31.png" alt=""></p>
+<p>In other words, most expressive GNN would use an <strong>injective neighbor aggregation</strong> function at each step</p>
 <ul>
-<li><strong>Stage 1: </strong> Aggregate from node neighbors</li>
+<li>Maps different neighbors to different embeddings</li>
 </ul>
-<script type="math/tex; mode=display">
-h_{N(v)}^{(l)}\leftarrow AGG\left(\left\{h_u^{(l-1)},\forall u \in N(v)\right\}\right)</script><ul>
-<li><strong>Stage 2: </strong> Further aggregate over the node itself</li>
+<h3 id="2-Designing-the-Most-Powerful-Graph-Neural-Network"><a href="#2-Designing-the-Most-Powerful-Graph-Neural-Network" class="headerlink" title="2. Designing the Most Powerful Graph Neural Network"></a>2. Designing the Most Powerful Graph Neural Network</h3><p><strong>Key observation:</strong> Expressive power of GNNs can be characterized by that of neighbor aggregation functions they use</p>
+<ul>
+<li>A more expressive aggregation function leads to a more expressive GNN</li>
+<li>Injective aggregation function leads to the most expressive GNN</li>
+</ul>
+<h4 id="2-1-Neighbor-Aggregation"><a href="#2-1-Neighbor-Aggregation" class="headerlink" title="2.1 Neighbor Aggregation"></a>2.1 Neighbor Aggregation</h4><p><strong>Observation:</strong> Neighbor aggregation can be abstracted as a function over a mutil-set</p>
+<p>We analyze aggregation functions of two popular GNN models</p>
+<ul>
+<li><strong>GCN (mean-pool)</strong><ul>
+<li>Uses <strong>element-wise</strong> mean pooling over neighboring node features</li>
 </ul>
 </li>
 </ul>
 <script type="math/tex; mode=display">
-h_v^{(l)}\leftarrow\sigma\left(W^{(l)}\cdot CONCAT\left(h_v^{(l-1)},h_{N(v)}^{(l)}\right)\right)</script><h5 id="2-2-1-GraphSAGE-Neighbor-Aggregation"><a href="#2-2-1-GraphSAGE-Neighbor-Aggregation" class="headerlink" title="2.2.1 GraphSAGE Neighbor Aggregation"></a>2.2.1 GraphSAGE Neighbor Aggregation</h5><ul>
-<li><strong>Mean: </strong></li>
+Mean(\left\{x_u\right\}_{u\in N(v)})</script><ul>
+<li><strong>GraphSAGE (max-pool)</strong><ul>
+<li>Uses <strong>element-wise</strong> max pooling over neighboring node features</li>
+</ul>
+</li>
 </ul>
 <script type="math/tex; mode=display">
-AGG=\sum_{u\in N(v)}\frac{h_u^{(l-1)}}{|N(v)|}</script><ul>
-<li><strong>Pool: </strong>Transform neighbor vectors and apply symmetric vector function Mean$(\cdot)$ or Max$(\cdot)$</li>
+Max(\left\{x_u\right\}_{u\in N(v)})</script><h5 id="2-1-1-GCN"><a href="#2-1-1-GCN" class="headerlink" title="2.1.1 GCN"></a>2.1.1 GCN</h5><ul>
+<li>Take <strong>element-wise mean,</strong> followed by linear function and ReLU activation, i.e., max(0, x)</li>
+<li>Theorem [Xu et al. ICLR 2019]<ul>
+<li>GCN’s aggregation function cannot distinguish different multi-sets with the same color proportion</li>
 </ul>
-<script type="math/tex; mode=display">
-AGG=Mean(\left\{MLP(h_u^{(l-1)}),\forall u \in N(v)\right\})</script><ul>
-<li><strong>LSTM: </strong>Apply LSTM to reshuffled of neighbors</li>
+</li>
 </ul>
-<script type="math/tex; mode=display">
-AGG=LSTM([h_u^{(l-1)},\forall u \in \pi(N(v))])</script><h5 id="2-2-2-GraphSAGE-L2-Normalization"><a href="#2-2-2-GraphSAGE-L2-Normalization" class="headerlink" title="2.2.2 GraphSAGE: L2 Normalization"></a>2.2.2 GraphSAGE: L2 Normalization</h5><ul>
-<li><p><strong>Optional: Apply $\mathcal{l}_2$ normalization to $h_v^{(l)}$ at every layer</strong></p>
+<p><strong>Example:</strong> 1Y1B and 2Y2B</p>
+<ul>
+<li><p>For simplicity, we assume node colors are represented by one-hot encoding</p>
 </li>
 <li><script type="math/tex; mode=display">
-h_v^{(l)}\leftarrow\frac{h_v^{(l)}}{||h_v^{(l)}||_2},\forall v \in V</script><p>where$ \ ||u||_2=\sqrt{\sum_iu_i^2}$</p>
-</li>
-<li><p>没有 $l_2$ 正则化时，嵌入向量有着不同的尺度</p>
-</li>
-<li><p>在某些情况下，嵌入的正则化会导致性能改进</p>
-</li>
-<li><p>$l_2$ 正则化后，所有向量会有相同范数</p>
-</li>
-</ul>
-<h4 id="2-3-GAT"><a href="#2-3-GAT" class="headerlink" title="2.3 GAT"></a>2.3 GAT</h4><script type="math/tex; mode=display">
-h_v^{(l)}=\sigma\left(\sum_{u\in N(v)}\alpha_{vu}W^{(l)}h_u^{(l-1)}\right)</script><p>$\alpha_{vu}$ 为注意力权重</p>
-<h5 id="2-3-1-in-GCN-GraphSAGE"><a href="#2-3-1-in-GCN-GraphSAGE" class="headerlink" title="2.3.1 in GCN/GraphSAGE"></a>2.3.1 in GCN/GraphSAGE</h5><ul>
-<li>$\alpha_{vu}=\frac{1}{|N(v)|}$ is the weighting factor of node $u$’s message to node $v$</li>
-<li>All neighbors $u\in N(v)$ are equally important to node $v$</li>
-<li>$\alpha_{vu}$ is defined explicitly based on the structural properties of the graph (node degree) </li>
-</ul>
-<h5 id="2-3-2-Attention"><a href="#2-3-2-Attention" class="headerlink" title="2.3.2 Attention"></a>2.3.2 Attention</h5><p><strong>Goal: </strong>得到图中每个结点到邻居的重要性</p>
-<p><strong>Idea: </strong>遵循注意力策略来计算每个点的嵌入</p>
-<ul>
-<li>结点处理来自邻居的消息</li>
-<li>隐含地为邻域中不同结点指定不同的权重</li>
-</ul>
-<p><strong>Attention Mechanism $a$</strong></p>
-<ul>
-<li><p>首先计算注意力系数 $e_{vu}$，基于结点 $u$ 和 $v$ 的消息</p>
-<script type="math/tex; mode=display">
-e_{vu}=a(W^{(l)}h_u^{(l-1)},W^{(l)}h_v^{(l-1)})</script></li>
-<li><p>归一化以得到最终注意力权重，因此 $\sum_{u \in N(v)}\alpha_{vu}=1$</p>
-<script type="math/tex; mode=display">
-\alpha_{vu}=\frac{\exp(e_{vu})}{\sum_{k\in N(v)}\exp(e_{vu})}</script></li>
-<li><p>现在可以根据注意力权重进行加权求和</p>
-</li>
-</ul>
-<script type="math/tex; mode=display">
-h_v^{(l)}=\sigma\left(\sum_{u\in N(v)}\alpha_{vu}W^{(l)}h_u^{(l-1)}\right)</script><ul>
-<li>那么<strong>Attention Mechanism $a$</strong> 应该怎么定义呢？</li>
-</ul>
-<p>有多种不同选择。例如：使用简单的线性层神经网络</p>
-<script type="math/tex; mode=display">
-e_{AB}=a(W^{(l)}h_A^{(l-1)},W^{(l)}h_B^{(l-1)})
-\\=Linear(Concat(W^{(l)}h_A^{(l-1)},W^{(l)}h_B^{(l-1)}))</script><p>$a$ 的基本参数是联合训练的</p>
-<ul>
-<li>但这有时候很难学习，难以收敛。使用  Multi-head Attention</li>
-<li>这是一种稳定的注意力机制的学习过程</li>
-<li>有多个注意力分数</li>
-</ul>
-<script type="math/tex; mode=display">
-h_v^{(l)}[1]=\sigma\left(\sum_{u\in N(v)}\alpha_{vu}^1W^{(l)}h_u^{(l-1)}\right)\\
-h_v^{(l)}[2]=\sigma\left(\sum_{u\in N(v)}\alpha_{vu}^2W^{(l)}h_u^{(l-1)}\right)\\
-h_v^{(l)}[3]=\sigma\left(\sum_{u\in N(v)}\alpha_{vu}^3W^{(l)}h_u^{(l-1)}\right)</script><script type="math/tex; mode=display">
-h_v^{(l)}=AGG(h_v^{(l)}[1],h_v^{(l)}[2],h_v^{(l)}[3])</script><h5 id="2-2-3-Benefits-of-Attention-Mechanism"><a href="#2-2-3-Benefits-of-Attention-Mechanism" class="headerlink" title="2.2.3 Benefits of Attention Mechanism"></a>2.2.3 Benefits of Attention Mechanism</h5><p><strong>为不同邻居指定不同的重要性</strong></p>
-<ul>
-<li>Computationally efficient:<ul>
-<li>注意力系数可以在所有的边上并行</li>
-<li>在所有结点上，聚合可以并行化</li>
-</ul>
-</li>
-<li>Storage efficient<ul>
-<li>不超过 $O(V+E)$</li>
-<li>固定数量的参数，与图大小无关</li>
-</ul>
-</li>
-<li>Localized<ul>
-<li>只关注局部网络邻居</li>
-</ul>
-</li>
-<li>Inductive capability<ul>
-<li>这是一个共享的边对边机制</li>
-<li>不依赖全局图结构</li>
-</ul>
-</li>
-</ul>
-<h3 id="3-GNN-Layer-in-Practice"><a href="#3-GNN-Layer-in-Practice" class="headerlink" title="3. GNN Layer in Practice"></a>3. GNN Layer in Practice</h3><p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-22_17-12-27.png" style="zoom:67%;"></p>
-<ul>
-<li>Batch Normalization: Stabilize nerual network training</li>
-<li>Dropout: Prevent overfitting</li>
-<li>Attention/Gating: Control the importance of a message</li>
-<li>More: Any other useful deep learning modules</li>
-</ul>
-<h4 id="3-1-BN"><a href="#3-1-BN" class="headerlink" title="3.1 BN"></a>3.1 BN</h4><p><strong>Goal:</strong> 稳定神经网络训练</p>
-<p><strong>Idea: </strong>给定一批输入</p>
-<ul>
-<li>将结点嵌入重新中心化为零均值</li>
-<li>缩放以具有单位方差<ul>
-<li>Input: $X\in\mathbb{R}^{N\times D}$, $N$ node embeddings</li>
-<li>Training Parameters: $\gamma,\beta\in \mathbb{R}^D$</li>
-<li>Output: $Y\in \mathbb{R}^{N\times D}$, Normalized node embeddings</li>
-</ul>
-</li>
-</ul>
-<script type="math/tex; mode=display">
-\begin{equation}
- \begin{split}
-\hat{X}_{i,j}&=\frac{X_{i,j}-\mu_j}{\sqrt{\sigma_j^2+\varepsilon}}\\
-Y_{i,j}&=\gamma_j\hat{X}_{i,j}+\beta_j
- \end{split}
-\end{equation}</script><h4 id="3-2-Dropout"><a href="#3-2-Dropout" class="headerlink" title="3.2 Dropout"></a>3.2 Dropout</h4><p><strong>Idea:</strong></p>
-<ul>
-<li>During training: with some probability $p$, randomly set neurons to zero</li>
-<li>During testing: Use all the neurons for computation</li>
-</ul>
-<h4 id="3-3-Activation-Non-linearity"><a href="#3-3-Activation-Non-linearity" class="headerlink" title="3.3 Activation Non-linearity"></a>3.3 Activation Non-linearity</h4><ul>
-<li><p>ReLU</p>
-</li>
-<li><p>Sigmoid</p>
-</li>
-<li><p>Parametric ReLU</p>
-<p>$PReLU(x_i)=\max(x_i, 0)+a_i\min(x_i,0)$</p>
-</li>
-</ul>
-<hr>
-<h3 id="4-Stacking-Layers-of-a-GNN"><a href="#4-Stacking-Layers-of-a-GNN" class="headerlink" title="4. Stacking Layers of a GNN"></a>4. Stacking Layers of a GNN</h3><h4 id="4-1-How-to-construct-a-Graph-Neural-Network"><a href="#4-1-How-to-construct-a-Graph-Neural-Network" class="headerlink" title="4.1 How to construct a Graph Neural Network?"></a>4.1 How to construct a Graph Neural Network?</h4><ul>
-<li><p><strong>The standard way: </strong>按顺序堆叠图神经网络</p>
-</li>
-<li><p><strong>Issue of stacking many GNN layers: </strong>GNN遭受 over-smoothing 问题的影响。</p>
-</li>
-<li>Over-Smoothing: 所有结点嵌入收敛到相似的值<ul>
-<li>如果感受野太大了，那么基本上所有的神经网络都收集相同的信息，不同结点的最终输出也是相同的</li>
-<li>但我们希望不同结点的嵌入不同</li>
-</ul>
-</li>
-</ul>
-<h4 id="4-2-Receptive-Field-of-a-GNN"><a href="#4-2-Receptive-Field-of-a-GNN" class="headerlink" title="4.2 Receptive Field of a GNN"></a>4.2 Receptive Field of a GNN</h4><p>Receptive field: the set of nodes that determine the embedding of a node of interest</p>
-<ul>
-<li><p>in a $K$-layer GNN, each node has a receptive field of $K$-hop neighborhood</p>
-</li>
-<li><p>一个结点的嵌入由它的感受野确定，如果两个结点有高度重叠的感受野，那么他们的嵌入也很可能高度相似。</p>
-</li>
-<li>堆叠许多 GNN 层 $\rightarrow$ 结点具有高度重叠的感受野 $\rightarrow$ 结点嵌入会非常相似 $\rightarrow$ 过度平滑问题</li>
-</ul>
-<h4 id="4-3-Lesson-1-Be-cautious-when-adding-GNN-layers"><a href="#4-3-Lesson-1-Be-cautious-when-adding-GNN-layers" class="headerlink" title="4.3 Lesson 1: Be cautious when adding GNN layers"></a>4.3 Lesson 1: Be cautious when adding GNN layers</h4><ul>
-<li>Unlike neural networks in other domains, <strong>adding more GNN layers do not always help</strong></li>
-<li><strong>Step 1: Analyze the necessary receptive field</strong> to slove problem<ul>
-<li>by computing the diameter of the graph</li>
-</ul>
-</li>
-<li><strong>Step 2: </strong>Set number of GNN layers $L$ to be a bit more than the receptive field. <strong>Do not set $L$ to  be unnecessarily large!</strong> </li>
-<li>How to enhance the expressive power of a GNN, if the number of GNN layers is small?</li>
-</ul>
-<h4 id="4-4-Expressive-Power-for-Shallow-GNNs"><a href="#4-4-Expressive-Power-for-Shallow-GNNs" class="headerlink" title="4.4 Expressive Power for Shallow GNNs"></a>4.4 Expressive Power for Shallow GNNs</h4><ul>
-<li><strong>Solution 1: </strong>Increase the expressive power within each GNN layer<ul>
-<li>In our previous examples, each transformation or aggregation function only include one linear layer</li>
-<li>We can make aggregation / transformation become a deep neural network</li>
-</ul>
-</li>
-<li><strong>Solution 2: </strong>Add layers that do not pass messages<ul>
-<li>A GNN does not necessarily only contain GNN layers</li>
-<li>We can add <strong>MLP layers</strong> before and after GNN layers, as <strong>pre-process layers</strong> and <strong>post-process layers</strong><ul>
-<li><strong>pre-process layers: </strong>Important when encoding node features is necessary. E.g., when nodes represent images/text</li>
-<li><strong>post-process layers: </strong>important when reasoning / transformation over node embeddings are needed. E.g., graph classification, knowledge graphs</li>
-</ul>
-</li>
-<li>In practice, adding these layers works great!</li>
-</ul>
-</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-22_22-36-26.png" alt=""></p>
-<h4 id="4-5-Lesson-2-Add-skip-connections-in-GNNs"><a href="#4-5-Lesson-2-Add-skip-connections-in-GNNs" class="headerlink" title="4.5 Lesson 2: Add skip connections in GNNs"></a>4.5 Lesson 2: Add skip connections in GNNs</h4><ul>
-<li><strong>Observation from over-smoothing:</strong> Node embeddings in earlier GNN layers can sometimes better differentiate nodes</li>
-<li><strong>Solution: </strong>We can increase the impact of earlier layers on the final node embeddings, <strong>by adding shortcuts in GNN</strong></li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-22_22-42-11.png" alt=""></p>
-<h4 id="4-6-Why-do-skip-connections-work"><a href="#4-6-Why-do-skip-connections-work" class="headerlink" title="4.6 Why do skip connections work?"></a>4.6 Why do skip connections work?</h4><ul>
-<li><strong>Intuition: </strong>Skip connections create a mixture of models</li>
-<li>$N$ skip connections $\rightarrow$ $2^N$possible paths</li>
-<li>Each path could have up to $N$ modules</li>
-<li>We automatically  get <strong>a mixture of shallow GNNs and deep GNNs</strong></li>
-</ul>
-<h4 id="4-7-GCN-with-Skip-Connections"><a href="#4-7-GCN-with-Skip-Connections" class="headerlink" title="4.7 GCN with Skip Connections"></a>4.7 GCN with Skip Connections</h4><ul>
-<li><p><strong>A standard GCN layer:</strong></p>
-</li>
+Y=\left(
+\begin{matrix}
+   0\\
+   1
+  \end{matrix}
+\right),
+B=\left(
+\begin{matrix}
+   1\\
+   0
+  \end{matrix}
+\right)</script></li>
 <li><script type="math/tex; mode=display">
-h_v^{(l)}=\sigma\left(\underbrace{\sum_{u\in N(v)}W^{(l)}\frac{h_u^{(l-1)}}{|N(v)|}}_{This\ is\ our\ F(x)}\right)</script></li>
-<li><p><strong>A GCN layer with skip connection: </strong></p>
-</li>
-<li><script type="math/tex; mode=display">
-h_v^{(l)}=\sigma\left(\underbrace{\sum_{u\in N(v)}W^{(l)}\frac{h_u^{(l-1)}}{|N(v)|}}_{F(x)}+\underbrace{h_v^{(l-1)}}_x\right)</script></li>
+1Y1B=2Y2B=\left(
+\begin{matrix}
+   0.5\\
+   0.5
+  \end{matrix}
+\right)</script></li>
 </ul>
-<h4 id="4-8-Other-options-of-Skip-Connections"><a href="#4-8-Other-options-of-Skip-Connections" class="headerlink" title="4.8 Other options of Skip Connections"></a>4.8 Other options of Skip Connections</h4><p>Directly skip to the last layer</p>
-<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-06-22_22-55-51.png" alt=""></p>
+<h5 id="2-1-2-GraphSAGE"><a href="#2-1-2-GraphSAGE" class="headerlink" title="2.1.2 GraphSAGE"></a>2.1.2 GraphSAGE</h5><ul>
+<li>Apply an MLP, then take element-wise max</li>
+<li>Theorem [Xu et al. ICLR 2019]<ul>
+<li>GraphSAGE’s aggregation function cannot distinguish different multi-sets with the same set of distinct colors</li>
+</ul>
+</li>
+</ul>
+<h5 id="2-1-3-Summary"><a href="#2-1-3-Summary" class="headerlink" title="2.1.3 Summary"></a>2.1.3 Summary</h5><ul>
+<li>GCN and GraphSAGE’s aggregation function fail to distinguish some basic multi-sets; hence not injective</li>
+<li>Therefore, GCN and GraphSAGE are not maximally powerful GNNs</li>
+</ul>
+<h4 id="2-2-Design"><a href="#2-2-Design" class="headerlink" title="2.2 Design"></a>2.2 Design</h4><ul>
+<li><strong>Our goal:</strong> Design maximally powerful GNNs in the class of message-passing GNNs</li>
+<li>This can be achieved by designing <strong>injective neighbor aggregation function over multi-sets</strong></li>
+<li>Here, we design a nerual network that can model <strong>injective</strong> multiset function</li>
+</ul>
+<blockquote>
+<p><strong>Theorem:</strong> <strong>Any injective multi-set function can be expressed as:</strong></p>
+<script type="math/tex; mode=display">
+\Phi\left(\sum_{x\in S}f(x)\right)</script><p> $f$ is a non-linear function, $\sum$ is the sum over multi-set, $\Phi$ is a non-linear function</p>
+</blockquote>
+<p><strong>Proof Intuition:</strong></p>
+<p>$f$ produces one-hot encodings of colors. Summation of one-hot encodings retains all the information about the input multi-set.</p>
+<h5 id="2-2-1-How-to-model-Phi-and-f"><a href="#2-2-1-How-to-model-Phi-and-f" class="headerlink" title="2.2.1 How to model $\Phi$ and $f$"></a>2.2.1 How to model $\Phi$ and $f$</h5><p>We use a <strong>Multi-Layer Perceptron (MLP)</strong></p>
+<blockquote>
+<p><strong>Theorem:</strong> Universal Approximation Theorem [Hornik et al.,1989]</p>
+<p>1-hidden-layer MLP with sufficiently-large hidden dimensionality and appropriate non-linearity $\sigma(\cdot)$ (including ReLU and sigmoid) can approximate any continous function to an arbitrary accuracy</p>
+</blockquote>
+<script type="math/tex; mode=display">
+MLP_{\Phi}\left(\sum_{x\in S}MLP_{f}(x)\right)</script><p>In practice, MLP hidden dimensionality of 100 to 500 is sufficient</p>
+<h4 id="2-3-Most-Expressive-GNN"><a href="#2-3-Most-Expressive-GNN" class="headerlink" title="2.3 Most Expressive GNN"></a>2.3 Most Expressive GNN</h4><p><strong>Graph Isomorphism Network (GIN)</strong></p>
+<script type="math/tex; mode=display">
+MLP_{\Phi}\left(\sum_{x\in S}MLP_{f}(x)\right)</script><p><strong>GIN is THE most expressive GNN</strong> in the class of massage-passing GNNs!</p>
+<h4 id="2-4-Full-Model-of-GIN"><a href="#2-4-Full-Model-of-GIN" class="headerlink" title="2.4 Full Model of GIN"></a>2.4 Full Model of GIN</h4><p>So far: We have described the neighboe aggregation part of GIN</p>
+<p>We now describe the full model of GIN by relating it to <strong>WL graph kernel</strong> (traditional way of obtaining graph-level features)</p>
+<ul>
+<li>We will see how GIN is a “neural network” version of the WL graph kernel</li>
+</ul>
+<blockquote>
+<p><strong>Recall: Color refinement algorithm in WL kernel</strong></p>
+<p>Given: A graph $G$ with a set of nodes $V$</p>
+<ul>
+<li>Assign an initial color $c^{(0)}(v)$ to each node $v$</li>
+<li>Iteratively refine node colors by</li>
+</ul>
+<script type="math/tex; mode=display">
+c^{(k+1)}(v)=HASH\left(c^{(k)}(v), \left\{c^{(k)}(u)\right\}_{u\in N(v)}\right)</script><p>where HASH maps different inputs to different colors</p>
+<ul>
+<li>After $K$ steps of color refinement, <strong>${c^{(K)}(v)}$ summarizes the structure of $K$-hop neighborhood</strong></li>
+</ul>
+</blockquote>
+<ul>
+<li><strong>GIN uses a nerual network to model the injective HASH function</strong></li>
+<li>$c^{(k)}(v)$: Root node features </li>
+<li>$\left\{c^{(k)}(u)\right\}_{u\in N(v)}$: Neighboring node colors</li>
+</ul>
+<blockquote>
+<p><strong>Theorem</strong></p>
+<p>Any injective function over the tuple </p>
+<script type="math/tex; mode=display">
+\left(c^{(k)}(v), \left\{c^{(k)}(u)\right\}_{u\in N(v)}\right)</script><p>can be modeled as </p>
+<script type="math/tex; mode=display">
+MLP_{\Phi}\left((1+\varepsilon)\cdot MLP_{f}(c^{(k)}(v))+\sum_{u\in N(v)}MLP_f(c^{(k)}(u))\right)</script><p>where $\varepsilon$ is a learnable scalar</p>
+</blockquote>
+<ul>
+<li>If input feature $c^{(0)}(v)$ is represented as one-hot, direct summation is injective</li>
+</ul>
+<script type="math/tex; mode=display">
+GINConv\left(c^{(k)}(v), \left\{c^{(k)}(u)\right\}_{u\in N(v)}\right)=MLP_{\Phi}\left((1+\varepsilon)\cdot c^{(k)}(v)+\sum_{u\in N(v)}c^{(k)}(u)\right)</script><ul>
+<li>We only need $\Phi$ to ensure the injectivity</li>
+</ul>
+<blockquote>
+<p>Given: A graph $G$ with a set of nodes $V$</p>
+<ul>
+<li>Assign an initial color $c^{(0)}(v)$ to each node $v$</li>
+<li>Iteratively update node vectors by</li>
+</ul>
+<script type="math/tex; mode=display">
+c^{(k+1)}(v)=GINconv\left(c^{(k)}(v), \left\{c^{(k)}(u)\right\}_{u\in N(v)}\right)</script><p>where GINconv maps different inputs to different embeddings</p>
+<ul>
+<li>After $K$ steps of GIN iterations, <strong>${c^{(K)}(v)}$ summarizes the structure of $K$-hop neighborhood</strong></li>
+</ul>
+</blockquote>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">Update target</th>
+<th style="text-align:center">Update function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">WL Graph Kernel</td>
+<td style="text-align:center">Node colors (one-hot)</td>
+<td style="text-align:center">HASH</td>
+</tr>
+<tr>
+<td style="text-align:center">GIN</td>
+<td style="text-align:center">Node embeddings (low-dim vectors)</td>
+<td style="text-align:center">GINConv</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><p>Advantages of GIN over the WL graph kernel are:</p>
+<ul>
+<li>Node embeddings are low dimensional; hence, they can capture the fine-grained similarity of different nodes</li>
+<li>Parameters of the update function can be learned for the downstream tasks</li>
+</ul>
+</li>
+<li><p>Because of the relation between GIN and the WL graph kernel, their expressive is exactly the same</p>
+</li>
+<li>How powerful is this?<ul>
+<li>WL kernel has been both theoretically and empirically shown to distinguish most of the real world graph [Cai et al. 1992]</li>
+<li>Hence, GIN is also powerful enough to distinguish most of the real graphs</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/zxwx1111/Figurebed/img/Snipaste_2021-07-01_17-44-11.png" alt=""></p>
 
                 
             </div>
@@ -656,7 +598,7 @@ h_v^{(l)}=\sigma\left(\underbrace{\sum_{u\in N(v)}W^{(l)}\frac{h_u^{(l-1)}}{|N(v
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://zxwx1111.github.io/posts/1431756251/">https://zxwx1111.github.io/posts/1431756251/</a>
+                    <a href="https://zxwx1111.github.io/posts/3002003676/">https://zxwx1111.github.io/posts/3002003676/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -745,13 +687,13 @@ h_v^{(l)}=\sigma\left(\underbrace{\sum_{u\in N(v)}W^{(l)}\frac{h_u^{(l-1)}}{|N(v
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/posts/575794509/">
+                <a href="/posts/3320430666/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="cs224w-07">
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="cs224w-09">
                         
-                        <span class="card-title">cs224w-07</span>
+                        <span class="card-title">cs224w-09</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -762,7 +704,7 @@ h_v^{(l)}=\sigma\left(\underbrace{\sum_{u\in N(v)}W^{(l)}\frac{h_u^{(l-1)}}{|N(v
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-06-24
+                            <i class="far fa-clock fa-fw icon-date"></i>2021-07-03
                         </span>
                         <span class="publish-author">
                             
@@ -790,13 +732,13 @@ h_v^{(l)}=\sigma\left(\underbrace{\sum_{u\in N(v)}W^{(l)}\frac{h_u^{(l-1)}}{|N(v
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/posts/3428813921/">
+                <a href="/posts/575794509/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="cs224w-05">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="cs224w-07">
                         
-                        <span class="card-title">cs224w-05</span>
+                        <span class="card-title">cs224w-07</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -807,7 +749,7 @@ h_v^{(l)}=\sigma\left(\underbrace{\sum_{u\in N(v)}W^{(l)}\frac{h_u^{(l-1)}}{|N(v
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-06-16
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-06-24
                             </span>
                         <span class="publish-author">
                             
